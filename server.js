@@ -3,9 +3,12 @@ require("dotenv").config();
 const route = require("./routes/index.route");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
+const { connectDB } = require("./config/database");
 
 const app = express();
 const port = process.env.PORT;
+
+connectDB();
 
 // Swagger route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
