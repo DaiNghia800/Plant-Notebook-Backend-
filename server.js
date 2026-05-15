@@ -4,12 +4,13 @@ const route = require("./routes/index.route");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 const { connectDB } = require("./config/database");
+const { initReminderJob } = require('./jobs/reminder.job');
 
 const app = express();
 const port = process.env.PORT;
 
 connectDB();
-
+initReminderJob();
 // Swagger route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
