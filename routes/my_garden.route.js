@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/my_garden.controller");
+const uploadCloudinary = require("../middlewares/uploadCloudinary");
 
 /**
  * @swagger
@@ -37,7 +38,7 @@ router.post("/catalog/seed", controller.seedPlantCatalog);
  *       201:
  *         description: Created
  */
-router.post("/plants", controller.createMyGardenPlant);
+router.post("/plants", uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.createMyGardenPlant);
 
 /**
  * @swagger
@@ -49,7 +50,7 @@ router.post("/plants", controller.createMyGardenPlant);
  *       200:
  *         description: Updated
  */
-router.put("/plants/:id", controller.updateMyGardenPlant);
+router.put("/plants/:id", uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.updateMyGardenPlant);
 
 /**
  * @swagger
