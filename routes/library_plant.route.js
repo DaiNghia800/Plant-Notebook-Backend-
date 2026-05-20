@@ -46,7 +46,7 @@ router.get('/', controller.getAllPlants);
  * @swagger
  * /library-plants/seed:
  *   post:
- *     summary: Khởi tạo/nạp dữ liệu mẫu 7 cây vào PostgreSQL (Admin)
+ *     summary: Khởi tạo/nạp dữ liệu mẫu 40 cây vào PostgreSQL (Admin)
  *     tags: [LibraryPlants]
  *     responses:
  *       200:
@@ -69,7 +69,7 @@ router.post('/seed', controller.seedPlants);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required: [id, name, category]
@@ -80,15 +80,40 @@ router.post('/seed', controller.seedPlants);
  *               name:
  *                 type: string
  *                 example: "Cây Đóng Góp Mới"
+ *               scientificName:
+ *                 type: string
+ *                 example: "Epipremnum aureum"
  *               category:
  *                 type: string
  *                 example: "Trong nhà"
  *               shortDescription:
  *                 type: string
  *                 example: "Mô tả AI tổng hợp"
- *               imageUrl:
+ *               description:
  *                 type: string
- *                 example: "https://images.unsplash.com/photo-1604762524887-5a1a5f2c4f43?auto=format&fit=crop&w=1200&q=80"
+ *                 example: "Mô tả chi tiết về cách trồng và chăm sóc"
+ *               lightLevel:
+ *                 type: string
+ *                 example: "Sáng gián tiếp"
+ *               waterNeed:
+ *                 type: string
+ *                 example: "Trung bình"
+ *               difficulty:
+ *                 type: string
+ *                 example: "Dễ"
+ *               temperature:
+ *                 type: string
+ *                 example: "18-30°C"
+ *               humidity:
+ *                 type: string
+ *                 example: "Trung bình (40-60%)"
+ *               toxicity:
+ *                 type: string
+ *                 example: "Độc nhẹ với thú cưng"
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: "File ảnh tải lên"
  *     responses:
  *       201:
  *         description: Gửi đề xuất thành công, trạng thái pending
@@ -167,7 +192,7 @@ router.get('/:id', controller.getPlantById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required: [id, name, category]
@@ -178,6 +203,9 @@ router.get('/:id', controller.getPlantById);
  *               name:
  *                 type: string
  *                 example: "Cây Mẫu Mới"
+ *               scientificName:
+ *                 type: string
+ *                 example: "Epipremnum aureum"
  *               category:
  *                 type: string
  *                 example: "Trong nhà"
@@ -187,9 +215,49 @@ router.get('/:id', controller.getPlantById);
  *               description:
  *                 type: string
  *                 example: "Mô tả chi tiết"
- *               imageUrl:
+ *               lightLevel:
  *                 type: string
- *                 example: "https://images.unsplash.com/photo-1604762524887-5a1a5f2c4f43?auto=format&fit=crop&w=1200&q=80"
+ *                 example: "Indirect sun"
+ *               waterNeed:
+ *                 type: string
+ *                 example: "Trung bình"
+ *               difficulty:
+ *                 type: string
+ *                 example: "Dễ"
+ *               temperature:
+ *                 type: string
+ *                 example: "18-30°C"
+ *               humidity:
+ *                 type: string
+ *                 example: "Trung bình"
+ *               toxicity:
+ *                 type: string
+ *                 example: "Độc nhẹ với thú cưng"
+ *               careGuide:
+ *                 type: string
+ *                 description: "JSON stringified array"
+ *                 example: "[\"Tưới khi mặt đất khô.\", \"Tránh nắng gắt.\"]"
+ *               growthTimeline:
+ *                 type: string
+ *                 description: "JSON stringified array"
+ *                 example: "[{\"monthLabel\": \"Tháng 1\", \"note\": \"Cây ra lá mới\"}]"
+ *               funFacts:
+ *                 type: string
+ *                 description: "JSON stringified array"
+ *                 example: "[\"Có thể lọc sạch không khí.\"]"
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: "File ảnh tải lên"
+ *               isTrending:
+ *                 type: boolean
+ *                 example: false
+ *               isRare:
+ *                 type: boolean
+ *                 example: false
+ *               badge:
+ *                 type: string
+ *                 example: "water"
  *     responses:
  *       201:
  *         description: Đã tạo thành công, trạng thái approved
@@ -213,19 +281,59 @@ router.post('/', uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudina
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               name:
  *                 type: string
  *                 example: "Tên đã cập nhật"
- *               imageUrl:
+ *               scientificName:
  *                 type: string
- *                 example: "https://images.unsplash.com/photo-1604762524887-5a1a5f2c4f43?auto=format&fit=crop&w=1200&q=80"
+ *                 example: "Tên khoa học mới"
+ *               category:
+ *                 type: string
+ *                 example: "Trong nhà"
+ *               shortDescription:
+ *                 type: string
+ *                 example: "Mô tả ngắn mới"
+ *               description:
+ *                 type: string
+ *                 example: "Mô tả chi tiết mới"
+ *               careGuide:
+ *                 type: string
+ *                 description: "JSON stringified array"
+ *                 example: "[\"Tưới khi mặt đất khô.\", \"Tránh nắng gắt.\"]"
+ *               growthTimeline:
+ *                 type: string
+ *                 description: "JSON stringified array"
+ *                 example: "[{\"monthLabel\": \"Tháng 1\", \"note\": \"Cây ra lá mới\"}]"
+ *               funFacts:
+ *                 type: string
+ *                 description: "JSON stringified array"
+ *                 example: "[\"Có thể lọc sạch không khí.\"]"
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: "File ảnh tải lên"
  *               isTrending:
  *                 type: boolean
  *                 example: true
+ *               isRare:
+ *                 type: boolean
+ *                 example: false
+ *               badge:
+ *                 type: string
+ *                 example: "sun"
+ *               temperature:
+ *                 type: string
+ *                 example: "20-25°C"
+ *               humidity:
+ *                 type: string
+ *                 example: "Cao"
+ *               toxicity:
+ *                 type: string
+ *                 example: "An toàn"
  *     responses:
  *       200:
  *         description: Cập nhật thành công

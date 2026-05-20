@@ -1,22 +1,14 @@
 const defaultGrowthTimeline = [
   {
-    monthLabel: 'Tháng 2',
-    imageUrl:
-      'https://images.unsplash.com/photo-1592150621744-aca64f48394e?auto=format&fit=crop&w=1200&q=80',
-    note: 'Cây bắt đầu ổn định sau khi thay chậu.',
+    stage: 'Cây non',
+    duration: '2-3 tháng',
+    note: 'Cần duy trì độ ẩm ổn định để kích thích rễ phát triển.',
   },
   {
-    monthLabel: 'Tháng 3',
-    imageUrl:
-      'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1200&q=80',
-    note: 'Lá mới mọc nhanh hơn và tán lá dày hơn.',
-  },
-  {
-    monthLabel: 'Tháng 4',
-    imageUrl:
-      'https://images.unsplash.com/photo-1593691512422-28cb17fb9b83?auto=format&fit=crop&w=1200&q=80',
-    note: 'Tán lá phát triển cân đối, phù hợp trưng bày trong nhà.',
-  },
+    stage: 'Trưởng thành',
+    duration: 'Ổn định',
+    note: 'Bắt đầu cho hoa liên tục nếu đủ ánh sáng và dinh dưỡng.',
+  }
 ];
 
 const defaultFunFacts = [
@@ -44,9 +36,21 @@ const newPlantSeedData = [
     humidity: 'Cao (>50%)',
     toxicity: 'Độc nhẹ với người và thú cưng',
     careGuide: [
-      'Tưới khi bề mặt đất bắt đầu khô, khoảng 1 lần/tuần.',
-      'Không cần nhiều ánh sáng, tránh nắng trực tiếp làm cháy lá.',
-      'Phun sương định kỳ để duy trì độ ẩm không khí xung quanh cây.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi bề mặt đất bắt đầu khô, khoảng 1 lần/tuần.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Không cần nhiều ánh sáng, tránh nắng trực tiếp làm cháy lá.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Phun sương định kỳ để duy trì độ ẩm không khí xung quanh cây.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -75,9 +79,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình (40-60%)',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Tưới đều đặn, để đất thoát nước tốt giữa các lần tưới.',
-      'Thích ánh sáng gián tiếp, có thể sống tốt dưới đèn huỳnh quang.',
-      'Cắt nhánh con đặt vào nước để nhân giống dễ dàng.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới đều đặn, để đất thoát nước tốt giữa các lần tưới.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Thích ánh sáng gián tiếp, có thể sống tốt dưới đèn huỳnh quang.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Cắt nhánh con đặt vào nước để nhân giống dễ dàng.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -106,9 +122,21 @@ const newPlantSeedData = [
     humidity: 'Thấp đến trung bình',
     toxicity: 'Độc nhẹ, gây kích ứng da và miệng',
     careGuide: [
-      'Tưới rất thưa, 2-3 tuần/lần, đất phải khô hoàn toàn trước khi tưới lại.',
-      'Không cần ánh sáng mạnh, phù hợp góc phòng hoặc hành lang.',
-      'Rễ củ dự trữ nước nên cây chịu được quên tưới lâu ngày.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới rất thưa, 2-3 tuần/lần, đất phải khô hoàn toàn trước khi tưới lại.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Không cần ánh sáng mạnh, phù hợp góc phòng hoặc hành lang.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Rễ củ dự trữ nước nên cây chịu được quên tưới lâu ngày.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -133,9 +161,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình (40-60%)',
     toxicity: 'Độc nhẹ với người và thú cưng, gây kích ứng da',
     careGuide: [
-      'Tưới khi lớp đất mặt khô 2-3 cm, tránh để úng.',
-      'Lau lá bằng vải ẩm để giữ độ bóng và giúp quang hợp tốt.',
-      'Cần ánh sáng gián tiếp đủ mạnh để lá giữ màu sắc đẹp.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi lớp đất mặt khô 2-3 cm, tránh để úng.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Lau lá bằng vải ẩm để giữ độ bóng và giúp quang hợp tốt.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Cần ánh sáng gián tiếp đủ mạnh để lá giữ màu sắc đẹp.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -160,9 +200,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình đến cao',
     toxicity: 'Độc với người và thú cưng, chứa calcium oxalate',
     careGuide: [
-      'Tưới khi đất bề mặt khô, không để nước đọng đáy chậu.',
-      'Thích độ ẩm cao, có thể phun sương hoặc đặt khay nước gần cây.',
-      'Cắt tỉa để tạo dáng hoặc nhân giống bằng cành cắt.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất bề mặt khô, không để nước đọng đáy chậu.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Thích độ ẩm cao, có thể phun sương hoặc đặt khay nước gần cây.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa để tạo dáng hoặc nhân giống bằng cành cắt.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -187,9 +239,21 @@ const newPlantSeedData = [
     humidity: 'Cao (>60%)',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Dùng nước mưa hoặc nước để qua đêm để tưới, tránh chlorine.',
-      'Giữ độ ẩm cao bằng cách đặt khay nước hoặc dùng máy tạo ẩm.',
-      'Tránh ánh sáng trực tiếp làm phai màu hoa văn lá.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Dùng nước mưa hoặc nước để qua đêm để tưới, tránh chlorine.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Giữ độ ẩm cao bằng cách đặt khay nước hoặc dùng máy tạo ẩm.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Tránh ánh sáng trực tiếp làm phai màu hoa văn lá.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -218,9 +282,21 @@ const newPlantSeedData = [
     humidity: 'Thấp đến trung bình',
     toxicity: 'Độc với mèo và chó',
     careGuide: [
-      'Tưới thưa, để đất khô giữa các lần tưới để tránh thối gốc.',
-      'Tránh nước có hàm lượng fluoride cao, có thể gây cháy đầu lá.',
-      'Cắt tỉa lá vàng ở gốc để cây luôn gọn gàng, sạch đẹp.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới thưa, để đất khô giữa các lần tưới để tránh thối gốc.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tránh nước có hàm lượng fluoride cao, có thể gây cháy đầu lá.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa lá vàng ở gốc để cây luôn gọn gàng, sạch đẹp.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -245,9 +321,21 @@ const newPlantSeedData = [
     humidity: 'Cao (>60%)',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Giữ đất luôn ẩm đều, không để đất khô quá hay úng quá.',
-      'Thích độ ẩm cao, phun sương lá hằng ngày trong mùa khô.',
-      'Tránh luồng gió điều hòa thổi trực tiếp vào cây.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Giữ đất luôn ẩm đều, không để đất khô quá hay úng quá.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Thích độ ẩm cao, phun sương lá hằng ngày trong mùa khô.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Tránh luồng gió điều hòa thổi trực tiếp vào cây.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -272,9 +360,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình (40-60%)',
     toxicity: 'Độc nhẹ, chứa calcium oxalate',
     careGuide: [
-      'Tưới vừa phải, để đất khô nhẹ giữa các lần tưới.',
-      'Tránh ánh sáng trực tiếp làm cháy hoặc phai màu lá.',
-      'Có thể đặt trong phòng ít cửa sổ mà cây vẫn sống khỏe.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới vừa phải, để đất khô nhẹ giữa các lần tưới.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Tránh ánh sáng trực tiếp làm cháy hoặc phai màu lá.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Có thể đặt trong phòng ít cửa sổ mà cây vẫn sống khỏe.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -299,9 +399,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình',
     toxicity: 'Độc nhẹ với người và thú cưng',
     careGuide: [
-      'Cần nhiều ánh sáng để phát triển tốt, đặt gần cửa sổ lớn.',
-      'Tưới đều đặn khi đất khô 3-4 cm, giảm tưới vào mùa đông.',
-      'Bón phân định kỳ mỗi tháng trong mùa sinh trưởng.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng để phát triển tốt, đặt gần cửa sổ lớn.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới đều đặn khi đất khô 3-4 cm, giảm tưới vào mùa đông.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân định kỳ mỗi tháng trong mùa sinh trưởng.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -326,9 +438,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình đến cao',
     toxicity: 'Độc với người và thú cưng',
     careGuide: [
-      'Cần nhiều ánh sáng để lá giữ được màu rực rỡ đặc trưng.',
-      'Tưới đều khi đất bề mặt khô, giữ ẩm ổn định.',
-      'Tránh di chuyển cây nhiều vì Croton dễ rụng lá khi thay đổi môi trường.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng để lá giữ được màu rực rỡ đặc trưng.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới đều khi đất bề mặt khô, giữ ẩm ổn định.'
+      },
+      {
+        step: 3,
+        title: 'Chăm sóc',
+        content: 'Tránh di chuyển cây nhiều vì Croton dễ rụng lá khi thay đổi môi trường.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -353,9 +477,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình (40-60%)',
     toxicity: 'Độc nhẹ với người và thú cưng',
     careGuide: [
-      'Ánh sáng gián tiếp đủ mạnh giúp lá giữ màu neon đặc trưng.',
-      'Tưới khi đất bề mặt khô, tránh úng rễ.',
-      'Cắt tỉa để cây ra nhánh nhiều hơn và tán dày hơn.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Ánh sáng gián tiếp đủ mạnh giúp lá giữ màu neon đặc trưng.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất bề mặt khô, tránh úng rễ.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa để cây ra nhánh nhiều hơn và tán dày hơn.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -382,9 +518,21 @@ const newPlantSeedData = [
     humidity: 'Thấp (<40%)',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Tưới theo phương pháp soak & dry — tưới đẫm rồi để đất khô hoàn toàn.',
-      'Cần nhiều ánh sáng, nên đặt ban công hoặc cửa sổ hướng nam/đông.',
-      'Tránh nước đọng vào lõi hoa vì dễ gây thối.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới theo phương pháp soak & dry — tưới đẫm rồi để đất khô hoàn toàn.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng, nên đặt ban công hoặc cửa sổ hướng nam/đông.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Tránh nước đọng vào lõi hoa vì dễ gây thối.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -413,9 +561,21 @@ const newPlantSeedData = [
     humidity: 'Thấp (<30%)',
     toxicity: 'Không độc, nhưng có gai nhọn',
     careGuide: [
-      'Tưới rất thưa, khoảng 3-4 tuần/lần vào mùa sinh trưởng.',
-      'Cần ánh sáng mạnh nhất có thể, lý tưởng nhất là ban công hướng tây.',
-      'Dùng đất chuyên dùng cho xương rồng, không dùng đất thường.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới rất thưa, khoảng 3-4 tuần/lần vào mùa sinh trưởng.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần ánh sáng mạnh nhất có thể, lý tưởng nhất là ban công hướng tây.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Dùng đất chuyên dùng cho xương rồng, không dùng đất thường.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -440,9 +600,21 @@ const newPlantSeedData = [
     humidity: 'Thấp đến trung bình',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Tưới khi đất khô hoàn toàn, khoảng 2-3 tuần/lần.',
-      'Không cần ánh sáng quá mạnh, hợp đặt bàn làm việc trong nhà.',
-      'Chậu nhỏ thoát nước tốt là điều kiện lý tưởng cho Haworthia.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất khô hoàn toàn, khoảng 2-3 tuần/lần.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Không cần ánh sáng quá mạnh, hợp đặt bàn làm việc trong nhà.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Chậu nhỏ thoát nước tốt là điều kiện lý tưởng cho Haworthia.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -467,9 +639,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình đến cao',
     toxicity: 'An toàn với người, độc nhẹ với thú cưng',
     careGuide: [
-      'Tưới nhiều hơn xương rồng thông thường, giữ đất ẩm nhẹ.',
-      'Cần thời gian nghỉ tối và lạnh để kích thích ra hoa.',
-      'Bón phân kali cao trước mùa ra hoa để hoa nở to và đẹp hơn.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới nhiều hơn xương rồng thông thường, giữ đất ẩm nhẹ.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần thời gian nghỉ tối và lạnh để kích thích ra hoa.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân kali cao trước mùa ra hoa để hoa nở to và đẹp hơn.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -494,9 +678,21 @@ const newPlantSeedData = [
     humidity: 'Thấp (<40%)',
     toxicity: 'Độc nhẹ với người và thú cưng',
     careGuide: [
-      'Tưới khi đất khô hoàn toàn, đặc biệt ít tưới vào mùa đông.',
-      'Cần nhiều ánh sáng để thân cây vững chắc, tránh vóng.',
-      'Bón phân loãng 1-2 lần/năm để cây phát triển đều đặn.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất khô hoàn toàn, đặc biệt ít tưới vào mùa đông.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng để thân cây vững chắc, tránh vóng.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân loãng 1-2 lần/năm để cây phát triển đều đặn.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -523,9 +719,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình',
     toxicity: 'Độc với mèo và chó',
     careGuide: [
-      'Thay nước mỗi 7-10 ngày nếu trồng trong nước, tránh nước máy có chlorine.',
-      'Không để ánh sáng trực tiếp chiếu vào lá, dễ bị cháy.',
-      'Bó chặt hoặc tạo hình xoắn bằng cách điều chỉnh ánh sáng từng hướng.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Thay nước mỗi 7-10 ngày nếu trồng trong nước, tránh nước máy có chlorine.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Không để ánh sáng trực tiếp chiếu vào lá, dễ bị cháy.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Bó chặt hoặc tạo hình xoắn bằng cách điều chỉnh ánh sáng từng hướng.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -554,9 +762,21 @@ const newPlantSeedData = [
     humidity: 'Thấp đến trung bình',
     toxicity: 'Độc với mèo và chó',
     careGuide: [
-      'Tưới ít, khoảng 10-14 ngày/lần, đất phải thoát nước tốt.',
-      'Đặt nơi sáng tán xạ, tránh nắng trực tiếp làm vàng lá.',
-      'Lau bụi lá định kỳ và cắt tỉa phần lá già phía dưới.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới ít, khoảng 10-14 ngày/lần, đất phải thoát nước tốt.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Đặt nơi sáng tán xạ, tránh nắng trực tiếp làm vàng lá.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Lau bụi lá định kỳ và cắt tỉa phần lá già phía dưới.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -581,9 +801,21 @@ const newPlantSeedData = [
     humidity: 'Cao (>60%)',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Tưới 1 lần/tuần bằng cách ngâm chậu vào nước 10-15 phút rồi để ráo.',
-      'Trồng trong vỏ cây hoặc sphagnum moss, không dùng đất thường.',
-      'Sau khi hoa tàn, cắt thân hoa còn 2 đốt để kích thích ra hoa lại.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới 1 lần/tuần bằng cách ngâm chậu vào nước 10-15 phút rồi để ráo.'
+      },
+      {
+        step: 2,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Trồng trong vỏ cây hoặc sphagnum moss, không dùng đất thường.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Sau khi hoa tàn, cắt thân hoa còn 2 đốt để kích thích ra hoa lại.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -612,9 +844,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình đến cao',
     toxicity: 'Độc nhẹ, chứa calcium oxalate',
     careGuide: [
-      'Tưới khi đất bề mặt khô, tránh úng sẽ làm gốc thối nhanh.',
-      'Màu đỏ sẽ đậm hơn nếu có ánh sáng vừa phải, không cần nhiều.',
-      'Phun sương lá giúp cây xanh tốt và bóng mượt hơn.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất bề mặt khô, tránh úng sẽ làm gốc thối nhanh.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Màu đỏ sẽ đậm hơn nếu có ánh sáng vừa phải, không cần nhiều.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Phun sương lá giúp cây xanh tốt và bóng mượt hơn.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -641,9 +885,21 @@ const newPlantSeedData = [
     humidity: 'Thấp đến trung bình',
     toxicity: 'Độc nhẹ, gây kích ứng da và miệng',
     careGuide: [
-      'Cần nắng trực tiếp ít nhất 5-6 tiếng/ngày để ra hoa nhiều.',
-      'Tưới ít khi cây không ra hoa — điều này kích thích cây ra nụ.',
-      'Cắt tỉa sau mỗi đợt hoa tàn để kích thích đợt hoa tiếp theo.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng trực tiếp ít nhất 5-6 tiếng/ngày để ra hoa nhiều.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới ít khi cây không ra hoa — điều này kích thích cây ra nụ.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa sau mỗi đợt hoa tàn để kích thích đợt hoa tiếp theo.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -672,9 +928,21 @@ const newPlantSeedData = [
     humidity: 'Thấp (<40%)',
     toxicity: 'An toàn với người, độc nhẹ với mèo và chó',
     careGuide: [
-      'Cần nắng nhiều, ít nhất 6-8 tiếng/ngày để phát triển và ra hoa.',
-      'Đất phải thoát nước tốt, tuyệt đối không để úng.',
-      'Cắt tỉa nhẹ sau mùa hoa để cây ra nhánh mới mùa sau.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng nhiều, ít nhất 6-8 tiếng/ngày để phát triển và ra hoa.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Đất phải thoát nước tốt, tuyệt đối không để úng.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa nhẹ sau mùa hoa để cây ra nhánh mới mùa sau.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -703,9 +971,21 @@ const newPlantSeedData = [
     humidity: 'Thấp đến trung bình',
     toxicity: 'An toàn với người, độc nhẹ với thú cưng khi ăn nhiều',
     careGuide: [
-      'Cần nắng trực tiếp mỗi ngày để cây khỏe và hương thơm đậm.',
-      'Tưới ít, đất khô giữa các lần tưới để tránh thối rễ.',
-      'Cắt tỉa thường xuyên vừa tạo hình đẹp vừa thu hoạch gia vị.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng trực tiếp mỗi ngày để cây khỏe và hương thơm đậm.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới ít, đất khô giữa các lần tưới để tránh thối rễ.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa thường xuyên vừa tạo hình đẹp vừa thu hoạch gia vị.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -730,9 +1010,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình đến cao',
     toxicity: 'An toàn với người, độc nhẹ với mèo',
     careGuide: [
-      'Tưới đều đặn hằng ngày vào mùa nóng để hoa không bị héo.',
-      'Bón phân giàu kali và phosphorus để kích thích ra hoa nhiều.',
-      'Cắt tỉa sau mùa hoa để cây phát triển nhánh mới, ra hoa mùa tới.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới đều đặn hằng ngày vào mùa nóng để hoa không bị héo.'
+      },
+      {
+        step: 2,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân giàu kali và phosphorus để kích thích ra hoa nhiều.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa sau mùa hoa để cây phát triển nhánh mới, ra hoa mùa tới.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -757,9 +1049,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình đến cao',
     toxicity: 'An toàn với người, độc nhẹ với chó và mèo',
     careGuide: [
-      'Giữ đất luôn ẩm, tưới đều đặn đặc biệt trong mùa khô.',
-      'Trồng trong chậu riêng vì Bạc Hà lan rất nhanh ra xung quanh.',
-      'Cắt ngọn thường xuyên để cây ra nhánh nhiều và lá to hơn.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Giữ đất luôn ẩm, tưới đều đặn đặc biệt trong mùa khô.'
+      },
+      {
+        step: 2,
+        title: 'Chăm sóc',
+        content: 'Trồng trong chậu riêng vì Bạc Hà lan rất nhanh ra xung quanh.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt ngọn thường xuyên để cây ra nhánh nhiều và lá to hơn.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -784,9 +1088,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình đến cao',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Cần nhiều nắng để ra hoa thơm, thiếu nắng hoa ít và nhạt hương.',
-      'Tưới đều khi đất bề mặt khô, tăng cường bón phân vào mùa ra hoa.',
-      'Cắt tỉa sau mùa hoa để tạo dáng và kích thích ra hoa mùa sau.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều nắng để ra hoa thơm, thiếu nắng hoa ít và nhạt hương.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới đều khi đất bề mặt khô, tăng cường bón phân vào mùa ra hoa.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa sau mùa hoa để tạo dáng và kích thích ra hoa mùa sau.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -811,9 +1127,21 @@ const newPlantSeedData = [
     humidity: 'Thấp (<40%)',
     toxicity: 'Rất độc với người và thú cưng',
     careGuide: [
-      'Cần nắng mạnh nhiều tiếng/ngày để ra hoa và phát triển thân đẹp.',
-      'Tưới ít, đặc biệt mùa mưa, để tránh thối gốc phình.',
-      'Dùng đất thoát nước nhanh và chậu nhỏ hơn kích thước thân để rễ không úng.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng mạnh nhiều tiếng/ngày để ra hoa và phát triển thân đẹp.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới ít, đặc biệt mùa mưa, để tránh thối gốc phình.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Dùng đất thoát nước nhanh và chậu nhỏ hơn kích thước thân để rễ không úng.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -840,9 +1168,21 @@ const newPlantSeedData = [
     humidity: 'Rất cao (môi trường nước)',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Không cần đất, chỉ cần ngâm rễ trong nước đủ sâu.',
-      'Cần nắng để ra hoa, đặt ở chỗ thoáng nắng.',
-      'Cắt tỉa khi cây lan quá nhiều để không che phủ toàn bộ mặt nước.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Không cần đất, chỉ cần ngâm rễ trong nước đủ sâu.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần nắng để ra hoa, đặt ở chỗ thoáng nắng.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Cắt tỉa khi cây lan quá nhiều để không che phủ toàn bộ mặt nước.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -867,9 +1207,21 @@ const newPlantSeedData = [
     humidity: 'Rất cao (môi trường nước)',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Cần ít nhất 6 tiếng nắng trực tiếp mỗi ngày để ra hoa.',
-      'Trồng trong chậu đất sét giữ nước, mực nước duy trì 20-30 cm.',
-      'Bón phân viên chuyên dụng cho cây thủy sinh để kích thích ra hoa.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần ít nhất 6 tiếng nắng trực tiếp mỗi ngày để ra hoa.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Trồng trong chậu đất sét giữ nước, mực nước duy trì 20-30 cm.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân viên chuyên dụng cho cây thủy sinh để kích thích ra hoa.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -898,9 +1250,21 @@ const newPlantSeedData = [
     humidity: 'Rất cao (môi trường nước)',
     toxicity: 'Độc nhẹ với chó và mèo',
     careGuide: [
-      'Cần nắng đủ để ra hoa, mực nước 30-50 cm tùy loại giống.',
-      'Trồng trong chậu đất nặng đặt dưới đáy hồ, không để giá thể nổi.',
-      'Bón phân viên thủy sinh định kỳ hằng tháng trong mùa sinh trưởng.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng đủ để ra hoa, mực nước 30-50 cm tùy loại giống.'
+      },
+      {
+        step: 2,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Trồng trong chậu đất nặng đặt dưới đáy hồ, không để giá thể nổi.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân viên thủy sinh định kỳ hằng tháng trong mùa sinh trưởng.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -927,9 +1291,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình',
     toxicity: 'An toàn với người, độc nhẹ với thú cưng khi ăn nhiều',
     careGuide: [
-      'Giữ đất ẩm đều, không để đất khô quá nhưng cũng không úng.',
-      'Cắt ngọn thường xuyên để cây ra nhánh và không ra hoa sớm.',
-      'Thu hoạch lá vào buổi sáng khi hàm lượng tinh dầu cao nhất.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Giữ đất ẩm đều, không để đất khô quá nhưng cũng không úng.'
+      },
+      {
+        step: 2,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt ngọn thường xuyên để cây ra nhánh và không ra hoa sớm.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Thu hoạch lá vào buổi sáng khi hàm lượng tinh dầu cao nhất.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -954,9 +1330,21 @@ const newPlantSeedData = [
     humidity: 'Trung bình',
     toxicity: 'An toàn với người, độc nhẹ với thú cưng',
     careGuide: [
-      'Cần nắng nhiều để trái chín đều và cây ra quả sai.',
-      'Tưới khi đất bắt đầu khô, tăng lượng tưới khi cây đang đậu quả.',
-      'Bón phân cân bằng định kỳ để cây ra hoa và đậu quả liên tục.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng nhiều để trái chín đều và cây ra quả sai.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất bắt đầu khô, tăng lượng tưới khi cây đang đậu quả.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân cân bằng định kỳ để cây ra hoa và đậu quả liên tục.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -986,8 +1374,16 @@ const libraryPlantSeedData = [
     humidity: 'Trung bình đến cao (40-60%)',
     toxicity: 'Độc nhẹ với người và thú cưng',
     careGuide: [
-      'Đặt gần cửa sổ có ánh sáng tán xạ, tránh nắng gắt trực tiếp.',
-      'Tưới khi bề mặt đất khô 2-3 cm, không để úng rễ.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Đặt gần cửa sổ có ánh sáng tán xạ, tránh nắng gắt trực tiếp.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới khi bề mặt đất khô 2-3 cm, không để úng rễ.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -1012,8 +1408,16 @@ const libraryPlantSeedData = [
     humidity: 'Thấp đến trung bình',
     toxicity: 'Độc nhẹ với người và thú cưng',
     careGuide: [
-      'Tưới thưa, khoảng 7-14 ngày/lần tùy độ ẩm không khí.',
-      'Dùng chậu thoát nước tốt để tránh thối gốc.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới thưa, khoảng 7-14 ngày/lần tùy độ ẩm không khí.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Dùng chậu thoát nước tốt để tránh thối gốc.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -1039,8 +1443,16 @@ const libraryPlantSeedData = [
     humidity: 'Trung bình đến cao (50-70%)',
     toxicity: 'Độc với người và thú cưng, chứa calcium oxalate',
     careGuide: [
-      'Giữ đất ẩm vừa, tưới khi mặt đất bắt đầu se khô.',
-      'Ưa môi trường thoáng khí, độ ẩm trung bình đến cao.',
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Giữ đất ẩm vừa, tưới khi mặt đất bắt đầu se khô.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Ưa môi trường thoáng khí, độ ẩm trung bình đến cao.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -1066,8 +1478,16 @@ const libraryPlantSeedData = [
     humidity: 'Thấp (<40%)',
     toxicity: 'Độc với người và thú cưng',
     careGuide: [
-      'Cần nhiều ánh sáng để giữ dáng, tránh thiếu sáng kéo dài.',
-      'Chỉ tưới khi đất khô hoàn toàn để tránh úng.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng để giữ dáng, tránh thiếu sáng kéo dài.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Chỉ tưới khi đất khô hoàn toàn để tránh úng.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -1092,8 +1512,16 @@ const libraryPlantSeedData = [
     humidity: 'Thấp (<40%)',
     toxicity: 'Độc nhẹ khi ăn, gel ngoài da an toàn',
     careGuide: [
-      'Ưa ánh sáng mạnh, nên đặt gần ban công hoặc cửa sổ.',
-      'Tưới ít, đảm bảo đất khô trước lần tưới tiếp theo.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Ưa ánh sáng mạnh, nên đặt gần ban công hoặc cửa sổ.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới ít, đảm bảo đất khô trước lần tưới tiếp theo.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,
@@ -1119,8 +1547,16 @@ const libraryPlantSeedData = [
     humidity: 'Trung bình (40-60%)',
     toxicity: 'Độc nhẹ với người và thú cưng',
     careGuide: [
-      'Trầu bà ưa bóng râm, tránh ánh nắng trực tiếp gay gắt để làm cháy lá. Tưới nước khi thấy lớp đất mặt se khô.',
-      'Giữ nhiệt độ phòng ổn định từ 18-30°C. Thường xuyên lau bụi trên lá để cây quang hợp tốt hơn.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Trầu bà ưa bóng râm, tránh ánh nắng trực tiếp gay gắt để làm cháy lá. Tưới nước khi thấy lớp đất mặt se khô.'
+      },
+      {
+        step: 2,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Giữ nhiệt độ phòng ổn định từ 18-30°C. Thường xuyên lau bụi trên lá để cây quang hợp tốt hơn.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: [
@@ -1149,9 +1585,21 @@ const libraryPlantSeedData = [
     humidity: 'Trung bình (40-60%)',
     toxicity: 'An toàn với người và thú cưng',
     careGuide: [
-      'Đặt nơi có ánh sáng nhẹ, tránh nắng trưa trực tiếp.',
-      'Tưới đều khi đất vừa se khô, không tưới quá tay.',
-      'Cắt tỉa lá vàng định kỳ để cây luôn xanh khỏe.',
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Đặt nơi có ánh sáng nhẹ, tránh nắng trưa trực tiếp.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới đều khi đất vừa se khô, không tưới quá tay.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa lá vàng định kỳ để cây luôn xanh khỏe.'
+      }
     ],
     growthTimeline: defaultGrowthTimeline,
     funFacts: defaultFunFacts,

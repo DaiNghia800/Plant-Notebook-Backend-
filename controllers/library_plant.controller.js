@@ -29,6 +29,34 @@ exports.createPlant = async (req, res) => {
     if (!req.body.id || !req.body.name || !req.body.category) {
       return res.status(400).json({ message: 'id, name, and category are required' });
     }
+
+    // Parse JSON arrays if they are sent as strings via form-data
+    const fieldsToParse = ['careGuide', 'growthTimeline', 'funFacts'];
+    for (const field of fieldsToParse) {
+      if (typeof req.body[field] === 'string') {
+        const trimmed = req.body[field].trim();
+        if (trimmed === '') {
+          delete req.body[field]; // Ignore empty strings from form-data
+          continue;
+        }
+
+        // Tự động bao bọc chuỗi thường thành mảng nếu người dùng quên nhập dạng JSON
+        if (!trimmed.startsWith('[') && !trimmed.startsWith('{')) {
+          req.body[field] = [trimmed];
+          continue;
+        }
+
+        try {
+          req.body[field] = JSON.parse(trimmed);
+        } catch (e) {
+          console.warn(`Failed to parse ${field}:`, e.message);
+          return res.status(400).json({ 
+            message: `Dữ liệu của trường ${field} không đúng định dạng JSON hợp lệ. Chi tiết lỗi: ${e.message}. Bắt buộc phải là mảng hoặc đối tượng JSON hợp lệ.` 
+          });
+        }
+      }
+    }
+
     const newPlant = await libraryPlantService.createPlant(req.body);
     return res.status(201).json({ data: newPlant });
   } catch (error) {
@@ -82,6 +110,33 @@ exports.rejectPlant = async (req, res) => {
 
 exports.updatePlant = async (req, res) => {
   try {
+    // Parse JSON arrays if they are sent as strings via form-data
+    const fieldsToParse = ['careGuide', 'growthTimeline', 'funFacts'];
+    for (const field of fieldsToParse) {
+      if (typeof req.body[field] === 'string') {
+        const trimmed = req.body[field].trim();
+        if (trimmed === '') {
+          delete req.body[field]; // Ignore empty strings from form-data
+          continue;
+        }
+
+        // Tự động bao bọc chuỗi thường thành mảng nếu người dùng quên nhập dạng JSON
+        if (!trimmed.startsWith('[') && !trimmed.startsWith('{')) {
+          req.body[field] = [trimmed];
+          continue;
+        }
+
+        try {
+          req.body[field] = JSON.parse(trimmed);
+        } catch (e) {
+          console.warn(`Failed to parse ${field}:`, e.message);
+          return res.status(400).json({ 
+            message: `Dữ liệu của trường ${field} không đúng định dạng JSON hợp lệ. Chi tiết lỗi: ${e.message}. Bắt buộc phải là mảng hoặc đối tượng JSON hợp lệ.` 
+          });
+        }
+      }
+    }
+
     const updatedPlant = await libraryPlantService.updatePlant(req.params.id, req.body);
     return res.status(200).json({ data: updatedPlant });
   } catch (error) {
