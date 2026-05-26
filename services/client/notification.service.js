@@ -1,4 +1,4 @@
-const { messaging } = require('../config/firebase');
+const { messaging } = require('../../config/firebase');
 
 class NotificationService {
   static async sendReminderNotification(token, title, body, data = {}) {

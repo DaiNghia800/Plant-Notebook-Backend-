@@ -1,6 +1,6 @@
 const { json } = require('sequelize');
-const { User } = require('../models');
-const NotificationService = require('../services/notification.service');
+const { User } = require('../../models');
+const NotificationService = require('../../services/client/notification.service');
 
 module.exports.getUsers = async (req, res) => {
   try {

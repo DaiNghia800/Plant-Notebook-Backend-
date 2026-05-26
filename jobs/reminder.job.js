@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const NotificationService = require("../services/notification.service");
+const NotificationService = require("../services/client/notification.service");
 const { User, GardenPlant, Reminder, Plant } = require("../models");
 const { Op } = require('sequelize');
 

@@ -1,5 +1,5 @@
-const db = require("../models");
-const cloudinary = require("../config/cloudinary");
+const db = require("../../models");
+const cloudinary = require("../../config/cloudinary");
 const { where } = require("sequelize");
 
 module.exports.getMyGardenPlants = async (req, res) => {
