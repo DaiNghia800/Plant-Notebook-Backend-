@@ -1,4 +1,5 @@
-const db = require("../config/firebase");
+const db = require("../../config/firebase");
+const admin = require("firebase-admin");
 
 const GARDEN_COLLECTION = "my_garden_plants";
 const CATALOG_COLLECTION = "plants_catalog";

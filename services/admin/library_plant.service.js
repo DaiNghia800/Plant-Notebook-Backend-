@@ -1,42 +1,9 @@
-const { LibraryPlant } = require('../models');
-const { libraryPlantSeedData } = require('../seeds/library_plant.seed');
+const { LibraryPlant } = require('../../models');
+const { libraryPlantSeedData } = require('../../seeds/library_plant.seed');
 
-class LibraryPlantService {
-  async getAllPlants(filters = {}) {
-    const where = {};
-    if (filters.category) {
-      where.category = filters.category;
-    }
-    if (filters.isTrending !== undefined) {
-      where.isTrending = filters.isTrending === 'true' || filters.isTrending === true;
-    }
-    if (filters.isRare !== undefined) {
-      where.isRare = filters.isRare === 'true' || filters.isRare === true;
-    }
-    if (filters.approvalStatus && filters.approvalStatus !== 'all') {
-      where.approvalStatus = filters.approvalStatus;
-    } else if (filters.approvalStatus !== 'all') {
-      where.approvalStatus = 'approved'; // Mặc định chỉ lấy cây đã duyệt cho user thường
-    }
-
-    return await LibraryPlant.findAll({ where });
-  }
-
-  async getPlantById(id) {
-    return await LibraryPlant.findByPk(id);
-  }
-
+class LibraryPlantAdminService {
   async createPlant(data) {
     return await LibraryPlant.create({ ...data, approvalStatus: 'approved' }); // Admin tạo trực tiếp là approved
-  }
-
-  async contributePlant(data, userId) {
-    const payload = {
-      ...data,
-      approvalStatus: 'pending',
-      contributorId: userId || null
-    };
-    return await LibraryPlant.create(payload);
   }
 
   async approvePlant(id) {
@@ -89,4 +56,4 @@ class LibraryPlantService {
   }
 }
 
-module.exports = new LibraryPlantService();
+module.exports = new LibraryPlantAdminService();

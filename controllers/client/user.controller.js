@@ -1,5 +1,5 @@
 const { json } = require('sequelize');
-const { User } = require('../models'); 
+const { User } = require('../../models'); 
 
 module.exports.getUsers = async (req, res) => {
   try {
