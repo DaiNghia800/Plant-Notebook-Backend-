@@ -8,47 +8,66 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, phone, password, name } = req.body;
 
     // 1. validate
-    if (!email || !password || !name) {
+    if ((!email && !phone) || !password || !name) {
       return res.status(400).json({
-        message: "Thiếu thông tin (email, password, name)",
+        message: "Thiếu thông tin (email hoặc số điện thoại, password, name)",
       });
     }
 
     // 2. check existing user
-    const snapshot = await db
-      .collection("users")
-      .where("email", "==", email)
-      .limit(1)
-      .get();
+    if (email) {
+      const snapshot = await db
+        .collection("users")
+        .where("email", "==", email)
+        .limit(1)
+        .get();
 
-    if (!snapshot.empty) {
-      return res.status(400).json({
-        message: "Email đã được sử dụng",
-      });
+      if (!snapshot.empty) {
+        return res.status(400).json({
+          message: "Email đã được sử dụng",
+        });
+      }
+    }
+
+    if (phone) {
+      const snapshot = await db
+        .collection("users")
+        .where("phone", "==", phone)
+        .limit(1)
+        .get();
+
+      if (!snapshot.empty) {
+        return res.status(400).json({
+          message: "Số điện thoại đã được sử dụng",
+        });
+      }
     }
 
     // 3. hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 4. save to db
-    const newUserRef = await db.collection("users").add({
-      email,
+    const userData = {
       password: hashedPassword,
       name,
       createdAt: new Date().toISOString()
-    });
+    };
+    if (email) userData.email = email;
+    if (phone) userData.phone = phone;
+
+    const newUserRef = await db.collection("users").add(userData);
 
     // 5. response
+    const responseUser = { id: newUserRef.id, name };
+    if (email) responseUser.email = email;
+    if (phone) responseUser.phone = phone;
+
     return res.status(201).json({
       message: "Đăng ký thành công",
-      user: {
-        id: newUserRef.id,
-        email,
-        name
-      }
+      user: responseUser
     });
 
   } catch (err) {
@@ -61,26 +80,34 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    console.log(await bcrypt.hash("123456", 10));
-    const { email, password } = req.body;
+    const { email, phone, password } = req.body;
 
     // 1. validate
-    if (!email || !password) {
+    if ((!email && !phone) || !password) {
       return res.status(400).json({
-        message: "Thiếu email hoặc password",
+        message: "Thiếu email/số điện thoại hoặc password",
       });
     }
 
     // 2. tìm user
-    const snapshot = await db
-      .collection("users")
-      .where("email", "==", email)
-      .limit(1)
-      .get();
+    let snapshot;
+    if (email) {
+      snapshot = await db
+        .collection("users")
+        .where("email", "==", email)
+        .limit(1)
+        .get();
+    } else if (phone) {
+      snapshot = await db
+        .collection("users")
+        .where("phone", "==", phone)
+        .limit(1)
+        .get();
+    }
 
-    if (snapshot.empty) {
+    if (!snapshot || snapshot.empty) {
       return res.status(404).json({
-        message: "User không tồn tại",
+        message: "Tài khoản không tồn tại",
       });
     }
 
@@ -97,24 +124,30 @@ exports.login = async (req, res) => {
     }
 
     // 4. tạo token
+    const tokenPayload = {
+      id: doc.id,
+    };
+    if (user.email) tokenPayload.email = user.email;
+    if (user.phone) tokenPayload.phone = user.phone;
+
     const token = jwt.sign(
-      {
-        id: doc.id,
-        email: user.email,
-      },
+      tokenPayload,
       SECRET_KEY,
       { expiresIn: "1d" }
     );
 
     // 5. response
+    const responseUser = {
+      id: doc.id,
+      name: user.name,
+    };
+    if (user.email) responseUser.email = user.email;
+    if (user.phone) responseUser.phone = user.phone;
+
     return res.json({
       message: "Đăng nhập thành công",
       token,
-      user: {
-        id: doc.id,
-        email: user.email,
-        name: user.name,
-      },
+      user: responseUser,
     });
   } catch (err) {
     console.error(err);
