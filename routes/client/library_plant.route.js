@@ -143,6 +143,34 @@ router.get('/check-existence', controller.checkExistence);
 
 /**
  * @swagger
+ * /library-plants/scan:
+ *   post:
+ *     summary: Nhận dạng và phân tích cây trồng qua ảnh sử dụng Gemini
+ *     tags: [LibraryPlants]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [image]
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: File ảnh cây trồng cần scan
+ *     responses:
+ *       200:
+ *         description: Trả về kết quả phân tích JSON thành công
+ *       429:
+ *         description: Tất cả API key đang bị rate limit
+ *       500:
+ *         description: Lỗi máy chủ nội bộ
+ */
+router.post('/scan', uploadCloudinary.singleImage, controller.scanPlantImage);
+
+/**
+ * @swagger
  * /library-plants/{id}:
  *   get:
  *     summary: Lấy chi tiết cây theo ID

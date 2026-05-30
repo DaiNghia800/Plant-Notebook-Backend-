@@ -1,4 +1,5 @@
 const libraryPlantService = require('../../services/client/library_plant.service');
+const geminiScannerService = require('../../services/client/gemini_scanner.service');
 
 exports.getAllPlants = async (req, res) => {
   try {
@@ -88,5 +89,26 @@ exports.checkExistence = async (req, res) => {
   } catch (error) {
     console.error('checkExistence error:', error);
     return res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
+exports.scanPlantImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Image file is required' });
+    }
+
+    console.log('[scanPlantImage] Processing photo scan. Size:', req.file.size);
+    const result = await geminiScannerService.scanPlant(req.file.buffer, req.file.mimetype);
+    
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('scanPlantImage error:', error);
+    
+    if (error.message === 'all_ai_keys_rate_limited') {
+      return res.status(429).json({ message: 'Tất cả API key đang bị giới hạn lượt gọi (Rate limited). Vui lòng thử lại sau.' });
+    }
+    
+    return res.status(500).json({ message: 'Lỗi phân tích hình ảnh từ AI', error: error.message });
   }
 };
