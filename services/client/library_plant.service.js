@@ -1,4 +1,4 @@
-const { LibraryPlant } = require('../../models');
+const { LibraryPlant, Sequelize } = require('../../models');
 
 class LibraryPlantClientService {
   async getAllPlants(filters = {}) {
@@ -32,6 +32,53 @@ class LibraryPlantClientService {
       contributorId: userId || null
     };
     return await LibraryPlant.create(payload);
+  }
+
+  async checkExistence({ name, scientificName }) {
+    const { Op } = require('sequelize');
+    const conditions = [];
+
+    if (scientificName && 
+        scientificName.trim().toLowerCase() !== 'khong ro' && 
+        scientificName.trim().toLowerCase() !== 'không rõ' &&
+        scientificName.trim().toLowerCase() !== 'khongro') {
+      conditions.push(
+        Sequelize.where(
+          Sequelize.fn('LOWER', Sequelize.col('scientificName')),
+          scientificName.trim().toLowerCase()
+        )
+      );
+    }
+
+    if (name && 
+        name.trim().toLowerCase() !== 'chua xac dinh duoc loai cay' && 
+        name.trim().toLowerCase() !== 'chưa xác định được loài cây') {
+      conditions.push(
+        Sequelize.where(
+          Sequelize.fn('LOWER', Sequelize.col('name')),
+          name.trim().toLowerCase()
+        )
+      );
+    }
+
+    if (conditions.length === 0) {
+      return { exists: false };
+    }
+
+    const plant = await LibraryPlant.findOne({
+      where: {
+        approvalStatus: {
+          [Op.in]: ['approved', 'pending']
+        },
+        [Op.or]: conditions
+      }
+    });
+
+    if (plant) {
+      return { exists: true, plantId: plant.id, name: plant.name, approvalStatus: plant.approvalStatus };
+    }
+
+    return { exists: false };
   }
 }
 

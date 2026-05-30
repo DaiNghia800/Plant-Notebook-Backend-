@@ -39,6 +39,8 @@ const uploadCloudinary = require('../../middlewares/uploadCloudinary');
  *     responses:
  *       200:
  *         description: Thành công
+ *       500:
+ *         description: Lỗi hệ thống nội bộ
  */
 router.get('/', controller.getAllPlants);
 
@@ -106,9 +108,38 @@ router.get('/', controller.getAllPlants);
  *       201:
  *         description: Gửi đề xuất thành công, trạng thái pending
  *       400:
- *         description: Thiếu thông tin bắt buộc
+ *         description: Thiếu thông tin bắt buộc (id, name, hoặc category)
+ *       500:
+ *         description: Lỗi hệ thống nội bộ
  */
 router.post('/contribute', uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.contributePlant);
+
+/**
+ * @swagger
+ * /library-plants/check-existence:
+ *   get:
+ *     summary: Kiểm tra xem cây đã tồn tại trong thư viện chưa
+ *     tags: [LibraryPlants]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Tên phổ thông của cây
+ *       - in: query
+ *         name: scientificName
+ *         schema:
+ *           type: string
+ *         description: Tên khoa học của cây
+ *     responses:
+ *       200:
+ *         description: "Thành công (trả về kết quả exists: true/false)"
+ *       400:
+ *         description: Yêu cầu ít nhất một trong hai tham số name hoặc scientificName
+ *       500:
+ *         description: Lỗi hệ thống nội bộ
+ */
+router.get('/check-existence', controller.checkExistence);
 
 /**
  * @swagger
@@ -127,7 +158,9 @@ router.post('/contribute', uploadCloudinary.singleImage, uploadCloudinary.upload
  *       200:
  *         description: Thành công
  *       404:
- *         description: Không tìm thấy cây
+ *         description: Không tìm thấy cây trong thư viện
+ *       500:
+ *         description: Lỗi hệ thống nội bộ
  */
 router.get('/:id', controller.getPlantById);
 

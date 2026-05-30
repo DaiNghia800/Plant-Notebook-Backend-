@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", clientRoute);
 app.use("/", adminRoute);
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`App listening on port ${port}`);
   console.log(`Swagger: http://localhost:${port}/api-docs`);
-})
+});

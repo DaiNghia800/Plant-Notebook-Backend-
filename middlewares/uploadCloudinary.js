@@ -13,17 +13,20 @@ const storage = multer.memoryStorage();
 
 // Bộ lọc chỉ cho phép tải lên các tệp định dạng hình ảnh
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) {
+  const isImageMime = file.mimetype && file.mimetype.startsWith('image/');
+  const isImageExt = file.originalname && file.originalname.match(/\.(jpg|jpeg|png|gif|webp|heic|heif)$/i);
+
+  if (isImageMime || isImageExt) {
     cb(null, true);
   } else {
-    cb(new Error('Chỉ chấp nhận các tệp tin hình ảnh!'), false);
+    cb(new Error(`Chỉ chấp nhận các tệp tin hình ảnh! Nhận được: ${file.mimetype}`), false);
   }
 };
 
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // Giới hạn kích thước tối đa của ảnh là 5MB
+    fileSize: 30 * 1024 * 1024 // Giới hạn kích thước tối đa của ảnh là 30MB
   },
   fileFilter: fileFilter
 });
@@ -80,7 +83,30 @@ const uploadToCloudinary = async (req, res, next) => {
   }
 };
 
+// Bọc middleware của multer để bắt lỗi (ví dụ: file quá lớn) và trả về thông báo lỗi JSON sạch sẽ
+const singleImageWrapper = (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      console.warn('[singleImageWrapper] Multer Error occurred:', err.code, err.message);
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          message: 'Kích thước hình ảnh quá lớn, giới hạn tối đa cho phép là 30MB.'
+        });
+      }
+      return res.status(400).json({
+        message: `Lỗi tải tải ảnh: ${err.message}`
+      });
+    } else if (err) {
+      console.warn('[singleImageWrapper] Non-Multer Error occurred:', err.message);
+      return res.status(400).json({
+        message: err.message
+      });
+    }
+    next();
+  });
+};
+
 module.exports = {
-  singleImage: upload.single('image'), // Nhận file với key là 'image' trong form-data
+  singleImage: singleImageWrapper, // Nhận file với key là 'image' trong form-data
   uploadToCloudinary
 };
