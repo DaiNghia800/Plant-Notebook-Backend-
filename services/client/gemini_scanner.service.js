@@ -139,7 +139,8 @@ class GeminiScannerService {
       ],
       generationConfig: {
         temperature: 0.2,
-        maxOutputTokens: 1024
+        maxOutputTokens: 1024,
+        responseMimeType: 'application/json'
       }
     };
 
@@ -178,11 +179,18 @@ class GeminiScannerService {
       clean = clean.replace(/```json/g, '').replace(/```/g, '').trim();
     }
 
-    const parsed = JSON.parse(clean);
-    if (typeof parsed !== 'object' || parsed === null) {
-      throw new Error('Parsed response is not a valid JSON object');
+    try {
+      const parsed = JSON.parse(clean);
+      if (typeof parsed !== 'object' || parsed === null) {
+        throw new Error('Parsed response is not a valid JSON object');
+      }
+      return parsed;
+    } catch (err) {
+      console.error('[GeminiScannerService] JSON parse failed!');
+      console.error('[GeminiScannerService] Raw text:', text);
+      console.error('[GeminiScannerService] Cleaned text:', clean);
+      throw err;
     }
-    return parsed;
   }
 
   _isBannedError(msg) {

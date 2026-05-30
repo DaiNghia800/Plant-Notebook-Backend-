@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 require("dotenv").config();
 const clientRoute = require("./routes/client/index.route");
 const adminRoute = require("./routes/admin/index.route");
@@ -7,6 +8,7 @@ const swaggerSpec = require("./config/swagger");
 const { connectDB } = require("./config/database");
 
 const app = express();
+app.use(cors());
 const port = process.env.PORT;
 
 connectDB();
