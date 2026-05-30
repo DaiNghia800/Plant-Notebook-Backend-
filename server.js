@@ -7,10 +7,22 @@ const sequelize = require("./config/database");
 
 // Import models để đảm bảo các bảng được đăng ký
 require("./models/user.model");
+require("./models/libraryPlant.model");
 require("./models/myGarden.model");
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+// CORS middleware
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // Swagger route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
