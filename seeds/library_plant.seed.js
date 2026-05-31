@@ -1,0 +1,1618 @@
+const defaultGrowthTimeline = [
+  {
+    stage: 'Cây non',
+    duration: '2-3 tháng',
+    note: 'Cần duy trì độ ẩm ổn định để kích thích rễ phát triển.',
+  },
+  {
+    stage: 'Trưởng thành',
+    duration: 'Ổn định',
+    note: 'Bắt đầu cho hoa liên tục nếu đủ ánh sáng và dinh dưỡng.',
+  }
+];
+
+const defaultFunFacts = [
+  'Cây trong nhà thường xanh hơn khi được xoay chậu định kỳ mỗi 1-2 tuần.',
+  'Lau bụi trên lá giúp cây quang hợp tốt hơn và giảm nguy cơ sâu bệnh.',
+  'Ánh sáng gián tiếp mạnh là lựa chọn an toàn cho đa số cây trồng trong nhà.',
+];
+
+// ── CÁC CÂY MỚI BỔ SUNG (30 loại) ───────────────────────────────────────────
+
+const newPlantSeedData = [
+  // ─── TRONG NHÀ ───────────────────────────────────────────────────────────
+  {
+    id: 'peace-lily',
+    name: 'Peace Lily',
+    scientificName: 'Spathiphyllum wallisii',
+    category: 'Trong nhà',
+    shortDescription: 'Hoa trắng tinh tế, lọc không khí hiệu quả.',
+    description:
+      'Peace Lily (Lan Ý) nổi bật với hoa trắng thanh lịch và khả năng lọc không khí vượt trội, thích hợp đặt trong phòng ngủ hoặc văn phòng.',
+    lightLevel: 'Ít sáng',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '18-27°C',
+    humidity: 'Cao (>50%)',
+    toxicity: 'Độc nhẹ với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi bề mặt đất bắt đầu khô, khoảng 1 lần/tuần.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Không cần nhiều ánh sáng, tránh nắng trực tiếp làm cháy lá.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Phun sương định kỳ để duy trì độ ẩm không khí xung quanh cây.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Peace Lily là một trong số ít cây nở hoa tốt trong điều kiện thiếu sáng.',
+      'Lá rũ xuống khi khát nước nhưng hồi phục rất nhanh sau khi tưới.',
+      'NASA từng liệt kê Peace Lily trong danh sách cây lọc không khí hiệu quả nhất.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80',
+    isTrending: true,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/tuần',
+  },
+  {
+    id: 'spider-plant',
+    name: 'Spider Plant',
+    scientificName: 'Chlorophytum comosum',
+    category: 'Trong nhà',
+    shortDescription: 'Lá sọc xanh trắng, sinh sản nhanh, dễ chăm.',
+    description:
+      'Spider Plant (Cây Nhện) dễ trồng, sinh ra nhiều nhánh con và rất thích hợp làm cây treo hoặc đặt trên giá sách.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '13-27°C',
+    humidity: 'Trung bình (40-60%)',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới đều đặn, để đất thoát nước tốt giữa các lần tưới.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Thích ánh sáng gián tiếp, có thể sống tốt dưới đèn huỳnh quang.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Cắt nhánh con đặt vào nước để nhân giống dễ dàng.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Spider Plant có thể sinh ra hàng chục nhánh con mỗi năm.',
+      'Rất an toàn với thú cưng, không độc với mèo và chó.',
+      'Thích nghi tốt với nhiều điều kiện ánh sáng và nhiệt độ khác nhau.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1572688484438-313a6e50c333?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'zz-plant',
+    name: 'ZZ Plant',
+    scientificName: 'Zamioculcas zamiifolia',
+    category: 'Trong nhà',
+    shortDescription: 'Lá bóng đẹp, cực kỳ chịu hạn và chịu bóng.',
+    description:
+      'ZZ Plant (Zamioculcas) là cây nội thất lý tưởng cho không gian ít ánh sáng, lá bóng mượt và cực kỳ ít cần chăm sóc.',
+    lightLevel: 'Ít sáng',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '15-30°C',
+    humidity: 'Thấp đến trung bình',
+    toxicity: 'Độc nhẹ, gây kích ứng da và miệng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới rất thưa, 2-3 tuần/lần, đất phải khô hoàn toàn trước khi tưới lại.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Không cần ánh sáng mạnh, phù hợp góc phòng hoặc hành lang.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Rễ củ dự trữ nước nên cây chịu được quên tưới lâu ngày.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1632207691143-643e2a9a9361?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/2 tuần',
+  },
+  {
+    id: 'rubber-plant',
+    name: 'Rubber Plant',
+    scientificName: 'Ficus elastica',
+    category: 'Trong nhà',
+    shortDescription: 'Lá to bóng sẫm, phong cách hiện đại mạnh mẽ.',
+    description:
+      'Rubber Plant (Cây Cao Su Cảnh) có lá dày, màu xanh sậm hoặc tím đỏ, mang lại vẻ sang trọng cho không gian nội thất.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '16-27°C',
+    humidity: 'Trung bình (40-60%)',
+    toxicity: 'Độc nhẹ với người và thú cưng, gây kích ứng da',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi lớp đất mặt khô 2-3 cm, tránh để úng.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Lau lá bằng vải ẩm để giữ độ bóng và giúp quang hợp tốt.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Cần ánh sáng gián tiếp đủ mạnh để lá giữ màu sắc đẹp.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1599598425947-5202edd56bdb?auto=format&fit=crop&w=1200&q=80',
+    isTrending: true,
+    isRare: false,
+    wateringFrequencyLabel: '1-2 lần/tuần',
+  },
+  {
+    id: 'philodendron',
+    name: 'Philodendron',
+    scientificName: 'Philodendron hederaceum',
+    category: 'Trong nhà',
+    shortDescription: 'Leo hoặc đứng, lá tim xanh mướt, dễ sống.',
+    description:
+      'Philodendron Heart Leaf là cây nội thất cực kỳ dễ trồng, lá hình tim xanh mướt, hợp leo giàn hoặc thả rủ từ kệ cao.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '18-27°C',
+    humidity: 'Trung bình đến cao',
+    toxicity: 'Độc với người và thú cưng, chứa calcium oxalate',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất bề mặt khô, không để nước đọng đáy chậu.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Thích độ ẩm cao, có thể phun sương hoặc đặt khay nước gần cây.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa để tạo dáng hoặc nhân giống bằng cành cắt.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1616500133018-f9b5c4d52e21?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'calathea',
+    name: 'Calathea',
+    scientificName: 'Calathea orbifolia',
+    category: 'Trong nhà',
+    shortDescription: 'Lá hoa văn độc đáo, cuốn lại ban đêm.',
+    description:
+      'Calathea nổi tiếng với hoa văn lá phong phú và hành vi gập lá vào ban đêm, mang lại sức sống thú vị cho không gian sống.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Cao',
+    difficulty: 'Trung bình',
+    temperature: '18-27°C',
+    humidity: 'Cao (>60%)',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Dùng nước mưa hoặc nước để qua đêm để tưới, tránh chlorine.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Giữ độ ẩm cao bằng cách đặt khay nước hoặc dùng máy tạo ẩm.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Tránh ánh sáng trực tiếp làm phai màu hoa văn lá.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Calathea được gọi là "prayer plant" vì lá gập lại như đang cầu nguyện vào ban đêm.',
+      'Hoa văn trên lá mỗi cây đều khác nhau, không cây nào giống cây nào.',
+      'Rất nhạy cảm với chất lượng nước, nước máy có thể làm cháy đầu lá.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1611145434336-2b1b5b9ee69e?auto=format&fit=crop&w=1200&q=80',
+    isTrending: true,
+    isRare: true,
+    wateringFrequencyLabel: '2-3 lần/tuần',
+  },
+  {
+    id: 'dracaena',
+    name: 'Dracaena',
+    scientificName: 'Dracaena marginata',
+    category: 'Trong nhà',
+    shortDescription: 'Dáng cao thẳng, lá sọc xanh vàng, dễ chăm.',
+    description:
+      'Dracaena là cây nội thất dáng đứng đẹp, phù hợp góc phòng khách hoặc sảnh văn phòng với yêu cầu chăm sóc thấp.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '16-27°C',
+    humidity: 'Thấp đến trung bình',
+    toxicity: 'Độc với mèo và chó',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới thưa, để đất khô giữa các lần tưới để tránh thối gốc.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tránh nước có hàm lượng fluoride cao, có thể gây cháy đầu lá.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa lá vàng ở gốc để cây luôn gọn gàng, sạch đẹp.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1585320806297-9794b3e4aaae?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/tuần',
+  },
+  {
+    id: 'boston-fern',
+    name: 'Boston Fern',
+    scientificName: 'Nephrolepis exaltata',
+    category: 'Trong nhà',
+    shortDescription: 'Lá mềm rủ xuống, hợp treo hoặc đặt trên bệ cửa sổ.',
+    description:
+      'Boston Fern (Dương Xỉ Boston) mang vẻ xanh mát, tươi tắn, đặc biệt đẹp khi treo trong giỏ hoặc chậu cao.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Cao',
+    difficulty: 'Trung bình',
+    temperature: '15-24°C',
+    humidity: 'Cao (>60%)',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Giữ đất luôn ẩm đều, không để đất khô quá hay úng quá.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Thích độ ẩm cao, phun sương lá hằng ngày trong mùa khô.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Tránh luồng gió điều hòa thổi trực tiếp vào cây.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '3 lần/tuần',
+  },
+  {
+    id: 'chinese-evergreen',
+    name: 'Chinese Evergreen',
+    scientificName: 'Aglaonema commutatum',
+    category: 'Trong nhà',
+    shortDescription: 'Lá đốm sáng đa dạng, chịu bóng tốt.',
+    description:
+      'Chinese Evergreen (Vạn Niên Thanh) là cây chịu bóng xuất sắc với lá đốm xanh-bạc hoặc đỏ-hồng rất bắt mắt.',
+    lightLevel: 'Ít sáng',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '16-27°C',
+    humidity: 'Trung bình (40-60%)',
+    toxicity: 'Độc nhẹ, chứa calcium oxalate',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới vừa phải, để đất khô nhẹ giữa các lần tưới.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Tránh ánh sáng trực tiếp làm cháy hoặc phai màu lá.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Có thể đặt trong phòng ít cửa sổ mà cây vẫn sống khỏe.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1629730510253-9a2ebe2e41ba?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/tuần',
+  },
+  {
+    id: 'bird-of-paradise',
+    name: 'Bird of Paradise',
+    scientificName: 'Strelitzia reginae',
+    category: 'Trong nhà',
+    shortDescription: 'Lá chuối khổng lồ, phong cách nhiệt đới sang trọng.',
+    description:
+      'Bird of Paradise (Thiên Điểu) là cây statement mạnh mẽ với lá to rộng, mang phong cách nhiệt đới vào không gian sống.',
+    lightLevel: 'Sáng trực tiếp nhẹ',
+    waterNeed: 'Trung bình',
+    difficulty: 'Trung bình',
+    temperature: '18-30°C',
+    humidity: 'Trung bình',
+    toxicity: 'Độc nhẹ với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng để phát triển tốt, đặt gần cửa sổ lớn.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới đều đặn khi đất khô 3-4 cm, giảm tưới vào mùa đông.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân định kỳ mỗi tháng trong mùa sinh trưởng.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1596547609652-9cf5d8c76ea7?auto=format&fit=crop&w=1200&q=80',
+    isTrending: true,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'croton',
+    name: 'Croton',
+    scientificName: 'Codiaeum variegatum',
+    category: 'Trong nhà',
+    shortDescription: 'Lá nhiều màu rực rỡ như mùa thu.',
+    description:
+      'Croton (Cây Đổ Máu) nổi bật với lá nhiều màu vàng-đỏ-xanh đặc trưng, tạo điểm nhấn màu sắc ấn tượng trong nhà.',
+    lightLevel: 'Sáng trực tiếp nhẹ',
+    waterNeed: 'Trung bình',
+    difficulty: 'Trung bình',
+    temperature: '18-27°C',
+    humidity: 'Trung bình đến cao',
+    toxicity: 'Độc với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng để lá giữ được màu rực rỡ đặc trưng.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới đều khi đất bề mặt khô, giữ ẩm ổn định.'
+      },
+      {
+        step: 3,
+        title: 'Chăm sóc',
+        content: 'Tránh di chuyển cây nhiều vì Croton dễ rụng lá khi thay đổi môi trường.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1564420229862-7d8ec2ea7ede?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'pothos-neon',
+    name: 'Pothos Neon',
+    scientificName: 'Epipremnum aureum Neon',
+    category: 'Trong nhà',
+    shortDescription: 'Biến thể lá vàng neon rực rỡ, dễ trồng.',
+    description:
+      'Pothos Neon là biến thể nổi bật của Trầu Bà với lá màu vàng neon tươi sáng, tạo điểm nhấn sinh động cho không gian.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '18-30°C',
+    humidity: 'Trung bình (40-60%)',
+    toxicity: 'Độc nhẹ với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Ánh sáng gián tiếp đủ mạnh giúp lá giữ màu neon đặc trưng.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất bề mặt khô, tránh úng rễ.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa để cây ra nhánh nhiều hơn và tán dày hơn.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1604762523986-f26bfe2c8fe0?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+
+  // ─── SEN ĐÁ & XƯƠNG RỒNG ────────────────────────────────────────────────
+  {
+    id: 'echeveria',
+    name: 'Echeveria',
+    scientificName: 'Echeveria elegans',
+    category: 'Sen đá',
+    shortDescription: 'Hình hoa hồng đá tinh tế, màu sắc phong phú.',
+    description:
+      'Echeveria là loài sen đá hình hoa hồng đẹp mắt với đủ màu xanh, tím, hồng, cam — rất phổ biến trong bộ sưu tập sen đá.',
+    lightLevel: 'Sáng trực tiếp nhẹ',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '18-26°C',
+    humidity: 'Thấp (<40%)',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới theo phương pháp soak & dry — tưới đẫm rồi để đất khô hoàn toàn.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng, nên đặt ban công hoặc cửa sổ hướng nam/đông.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Tránh nước đọng vào lõi hoa vì dễ gây thối.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Echeveria có thể đổi màu khi được "stress" ánh sáng mạnh — gọi là hiện tượng "blushing".',
+      'Lá rụng có thể dùng để nhân giống thành cây mới.',
+      'Có hơn 150 loài Echeveria được ghi nhận trên thế giới.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1531750026848-8ada78f641c2?auto=format&fit=crop&w=1200&q=80',
+    isTrending: true,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/1,5 tuần',
+  },
+  {
+    id: 'cactus-barrel',
+    name: 'Cactus Barrel',
+    scientificName: 'Ferocactus cylindraceus',
+    category: 'Sen đá',
+    shortDescription: 'Xương rồng tròn to, ít chăm sóc nhất.',
+    description:
+      'Barrel Cactus là loài xương rồng hình trụ tròn biểu tượng, cực kỳ chịu hạn và phù hợp với người hay đi xa.',
+    lightLevel: 'Sáng trực tiếp nhẹ',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '18-35°C',
+    humidity: 'Thấp (<30%)',
+    toxicity: 'Không độc, nhưng có gai nhọn',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới rất thưa, khoảng 3-4 tuần/lần vào mùa sinh trưởng.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần ánh sáng mạnh nhất có thể, lý tưởng nhất là ban công hướng tây.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Dùng đất chuyên dùng cho xương rồng, không dùng đất thường.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/3 tuần',
+  },
+  {
+    id: 'haworthia',
+    name: 'Haworthia',
+    scientificName: 'Haworthia fasciata',
+    category: 'Sen đá',
+    shortDescription: 'Sen đá mini chịu bóng, lý tưởng để bàn.',
+    description:
+      'Haworthia là loài sen đá nhỏ nhắn, có thể sống tốt trong điều kiện ánh sáng thấp hơn so với hầu hết các loài sen đá khác.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '16-27°C',
+    humidity: 'Thấp đến trung bình',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất khô hoàn toàn, khoảng 2-3 tuần/lần.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Không cần ánh sáng quá mạnh, hợp đặt bàn làm việc trong nhà.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Chậu nhỏ thoát nước tốt là điều kiện lý tưởng cho Haworthia.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1509423350716-97f2360af9f4?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/2 tuần',
+  },
+  {
+    id: 'christmas-cactus',
+    name: 'Christmas Cactus',
+    scientificName: 'Schlumbergera bridgesii',
+    category: 'Sen đá',
+    shortDescription: 'Nở hoa rực rỡ vào mùa lạnh, dáng rủ đẹp.',
+    description:
+      'Christmas Cactus (Xương Rồng Giáng Sinh) khác biệt ở chỗ ưa độ ẩm và nở hoa vào cuối năm với màu hồng-đỏ-tím rực rỡ.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Trung bình',
+    temperature: '15-21°C',
+    humidity: 'Trung bình đến cao',
+    toxicity: 'An toàn với người, độc nhẹ với thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới nhiều hơn xương rồng thông thường, giữ đất ẩm nhẹ.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần thời gian nghỉ tối và lạnh để kích thích ra hoa.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân kali cao trước mùa ra hoa để hoa nở to và đẹp hơn.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1574684891174-df6b02ab38d7?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: true,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'jade-plant',
+    name: 'Jade Plant',
+    scientificName: 'Crassula ovata',
+    category: 'Sen đá',
+    shortDescription: 'Dáng cây gỗ thu nhỏ, lá dày bóng, sống lâu năm.',
+    description:
+      'Jade Plant (Cây Ngọc Bích) có thể sống hàng chục năm, dần hình thành dáng cây gỗ miniature rất đẹp và mang ý nghĩa phong thủy tốt.',
+    lightLevel: 'Sáng trực tiếp nhẹ',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '13-24°C',
+    humidity: 'Thấp (<40%)',
+    toxicity: 'Độc nhẹ với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất khô hoàn toàn, đặc biệt ít tưới vào mùa đông.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng để thân cây vững chắc, tránh vóng.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân loãng 1-2 lần/năm để cây phát triển đều đặn.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1510505751526-76254853b0e0?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/2 tuần',
+  },
+
+  // ─── PHONG THỦY ─────────────────────────────────────────────────────────
+  {
+    id: 'lucky-bamboo',
+    name: 'Lucky Bamboo',
+    scientificName: 'Dracaena sanderiana',
+    category: 'Phong thủy',
+    shortDescription: 'Tre phong thủy, trồng được trong nước hoặc đất.',
+    description:
+      'Lucky Bamboo (Trúc Phong Thủy) mang ý nghĩa may mắn và thịnh vượng, có thể trồng trực tiếp trong bình nước mà không cần đất.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '18-27°C',
+    humidity: 'Trung bình',
+    toxicity: 'Độc với mèo và chó',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Thay nước mỗi 7-10 ngày nếu trồng trong nước, tránh nước máy có chlorine.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Không để ánh sáng trực tiếp chiếu vào lá, dễ bị cháy.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Bó chặt hoặc tạo hình xoắn bằng cách điều chỉnh ánh sáng từng hướng.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Lucky Bamboo thực ra không phải là tre — nó thuộc họ Dracaena.',
+      'Số lượng cành có ý nghĩa phong thủy khác nhau: 3 cành là may mắn, 5 cành là sức khỏe.',
+      'Có thể sống trong bình thủy tinh đẹp, tạo vật trang trí vừa tinh tế vừa có ý nghĩa.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1601985705806-928e6e4a6b2a?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: 'Thay nước/tuần',
+  },
+  {
+    id: 'fortune-plant',
+    name: 'Cây Phúc Lộc Thọ',
+    scientificName: 'Dracaena fragrans',
+    category: 'Phong thủy',
+    shortDescription: 'Ba thân tượng trưng Phúc-Lộc-Thọ, hay gặp trong nhà Việt.',
+    description:
+      'Cây Phúc Lộc Thọ (Dracaena Fragrans) thường được bện thành 3 thân tượng trưng cho Phúc – Lộc – Thọ, phổ biến trong văn hóa trang trí Á Đông.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '18-27°C',
+    humidity: 'Thấp đến trung bình',
+    toxicity: 'Độc với mèo và chó',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới ít, khoảng 10-14 ngày/lần, đất phải thoát nước tốt.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Đặt nơi sáng tán xạ, tránh nắng trực tiếp làm vàng lá.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Lau bụi lá định kỳ và cắt tỉa phần lá già phía dưới.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/2 tuần',
+  },
+  {
+    id: 'orchid-phalaenopsis',
+    name: 'Lan Hồ Điệp',
+    scientificName: 'Phalaenopsis amabilis',
+    category: 'Phong thủy',
+    shortDescription: 'Hoa trắng-tím quý phái, biểu tượng sang trọng.',
+    description:
+      'Lan Hồ Điệp (Phalaenopsis) là loài lan phổ biến nhất trong nhà, hoa bền đẹp từ 2-3 tháng và mang ý nghĩa phồn thịnh, may mắn.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Thấp',
+    difficulty: 'Trung bình',
+    temperature: '18-27°C',
+    humidity: 'Cao (>60%)',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới 1 lần/tuần bằng cách ngâm chậu vào nước 10-15 phút rồi để ráo.'
+      },
+      {
+        step: 2,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Trồng trong vỏ cây hoặc sphagnum moss, không dùng đất thường.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Sau khi hoa tàn, cắt thân hoa còn 2 đốt để kích thích ra hoa lại.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Lan Hồ Điệp có thể ra hoa liên tục nhiều năm nếu được chăm sóc đúng cách.',
+      'Rễ của lan có màu xanh khi ẩm và bạc xám khi khô — đây là cách kiểm tra độ ẩm tốt nhất.',
+      'Lan cần sự chênh lệch nhiệt độ ngày-đêm để kích thích ra hoa.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1566907703624-3c05a3a1cfcd?auto=format&fit=crop&w=1200&q=80',
+    isTrending: true,
+    isRare: true,
+    wateringFrequencyLabel: '1 lần/tuần',
+  },
+  {
+    id: 'aglaonema-red',
+    name: 'Vạn Lộc Đỏ',
+    scientificName: 'Aglaonema rotundum',
+    category: 'Phong thủy',
+    shortDescription: 'Lá đỏ rực, thu hút tài lộc theo phong thủy.',
+    description:
+      'Aglaonema Red (Vạn Lộc Đỏ) được coi là cây mang lại may mắn và tài lộc với lá đỏ-hồng rực rỡ, đồng thời rất dễ chăm sóc.',
+    lightLevel: 'Ít sáng',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '18-27°C',
+    humidity: 'Trung bình đến cao',
+    toxicity: 'Độc nhẹ, chứa calcium oxalate',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất bề mặt khô, tránh úng sẽ làm gốc thối nhanh.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Màu đỏ sẽ đậm hơn nếu có ánh sáng vừa phải, không cần nhiều.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Phun sương lá giúp cây xanh tốt và bóng mượt hơn.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1629413645879-b5aba3c0f5c5?auto=format&fit=crop&w=1200&q=80',
+    isTrending: true,
+    isRare: false,
+    wateringFrequencyLabel: '1 lần/tuần',
+  },
+
+  // ─── NGOÀI TRỜI / BAN CÔNG ──────────────────────────────────────────────
+  {
+    id: 'bougainvillea',
+    name: 'Hoa Giấy',
+    scientificName: 'Bougainvillea spectabilis',
+    category: 'Ngoài trời',
+    shortDescription: 'Hoa rực rỡ quanh năm, leo giàn cực đẹp.',
+    description:
+      'Hoa Giấy (Bougainvillea) nổi bật với màu sắc rực rỡ từ hồng, đỏ đến tím, leo giàn hoặc tạo thế bonsai rất đẹp trên ban công.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '20-35°C',
+    humidity: 'Thấp đến trung bình',
+    toxicity: 'Độc nhẹ, gây kích ứng da và miệng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng trực tiếp ít nhất 5-6 tiếng/ngày để ra hoa nhiều.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới ít khi cây không ra hoa — điều này kích thích cây ra nụ.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa sau mỗi đợt hoa tàn để kích thích đợt hoa tiếp theo.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Phần màu sắc của Hoa Giấy thực ra là lá bắc, không phải cánh hoa.',
+      'Hoa Giấy có thể sống hàng chục năm và trở thành cây bonsai đẹp.',
+      'Chịu hạn rất tốt — tưới ít lại thường ra hoa nhiều hơn.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1598512752271-33f913a5af13?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'lavender',
+    name: 'Hoa Oải Hương',
+    scientificName: 'Lavandula angustifolia',
+    category: 'Ngoài trời',
+    shortDescription: 'Hương thơm dịu nhẹ, màu tím lãng mạn.',
+    description:
+      'Lavender (Oải Hương) được trồng vì hương thơm thư giãn đặc trưng và màu tím dịu dàng, phù hợp ban công hoặc cửa sổ thoáng nắng.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Thấp',
+    difficulty: 'Trung bình',
+    temperature: '15-26°C',
+    humidity: 'Thấp (<40%)',
+    toxicity: 'An toàn với người, độc nhẹ với mèo và chó',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng nhiều, ít nhất 6-8 tiếng/ngày để phát triển và ra hoa.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Đất phải thoát nước tốt, tuyệt đối không để úng.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa nhẹ sau mùa hoa để cây ra nhánh mới mùa sau.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Hương Lavender có tác dụng làm dịu căng thẳng và hỗ trợ giấc ngủ.',
+      'Hoa khô vẫn giữ hương thơm nhiều tháng và có thể dùng làm túi thơm.',
+      'Lavender kháng khuẩn tự nhiên — được dùng trong y học dân gian từ hàng thế kỷ.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1468327768560-75b778cbb551?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'rosemary',
+    name: 'Hương Thảo',
+    scientificName: 'Salvia rosmarinus',
+    category: 'Ngoài trời',
+    shortDescription: 'Thảo mộc thơm, vừa trang trí vừa dùng nấu ăn.',
+    description:
+      'Rosemary (Hương Thảo) vừa là cây cảnh đẹp dáng bụi vừa là gia vị nấu ăn phổ biến, dễ trồng ngoài ban công có nắng.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '16-27°C',
+    humidity: 'Thấp đến trung bình',
+    toxicity: 'An toàn với người, độc nhẹ với thú cưng khi ăn nhiều',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng trực tiếp mỗi ngày để cây khỏe và hương thơm đậm.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới ít, đất khô giữa các lần tưới để tránh thối rễ.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa thường xuyên vừa tạo hình đẹp vừa thu hoạch gia vị.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1515586000433-45406d8e6662?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'hibiscus',
+    name: 'Hoa Dâm Bụt',
+    scientificName: 'Hibiscus rosa-sinensis',
+    category: 'Ngoài trời',
+    shortDescription: 'Hoa đỏ rực nhiệt đới, nở liên tục quanh năm.',
+    description:
+      'Hoa Dâm Bụt (Hibiscus) là biểu tượng nhiệt đới với hoa to rực rỡ, phù hợp trồng ban công hoặc sân vườn có nhiều nắng.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Cao',
+    difficulty: 'Dễ',
+    temperature: '20-35°C',
+    humidity: 'Trung bình đến cao',
+    toxicity: 'An toàn với người, độc nhẹ với mèo',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới đều đặn hằng ngày vào mùa nóng để hoa không bị héo.'
+      },
+      {
+        step: 2,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân giàu kali và phosphorus để kích thích ra hoa nhiều.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa sau mùa hoa để cây phát triển nhánh mới, ra hoa mùa tới.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1566378246598-5b11a0d486cc?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: 'Hằng ngày',
+  },
+  {
+    id: 'mint',
+    name: 'Cây Bạc Hà',
+    scientificName: 'Mentha spicata',
+    category: 'Ngoài trời',
+    shortDescription: 'Thảo mộc mát lành, nhân giống cực nhanh.',
+    description:
+      'Bạc Hà (Mint) là thảo mộc dễ trồng nhất, lan rộng nhanh và có thể dùng pha trà, nấu ăn hoặc làm tinh dầu tại nhà.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Cao',
+    difficulty: 'Dễ',
+    temperature: '16-27°C',
+    humidity: 'Trung bình đến cao',
+    toxicity: 'An toàn với người, độc nhẹ với chó và mèo',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Giữ đất luôn ẩm, tưới đều đặn đặc biệt trong mùa khô.'
+      },
+      {
+        step: 2,
+        title: 'Chăm sóc',
+        content: 'Trồng trong chậu riêng vì Bạc Hà lan rất nhanh ra xung quanh.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt ngọn thường xuyên để cây ra nhánh nhiều và lá to hơn.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1628556270448-4d4e4148e1b1?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: 'Hằng ngày',
+  },
+  {
+    id: 'jasmine',
+    name: 'Hoa Nhài',
+    scientificName: 'Jasminum sambac',
+    category: 'Ngoài trời',
+    shortDescription: 'Hoa trắng hương thơm nồng nàn, leo giàn đẹp.',
+    description:
+      'Hoa Nhài (Jasmine) nổi tiếng với hương thơm dịu ngọt đặc trưng, thích hợp leo giàn ban công hoặc trồng chậu cạnh cửa sổ.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Trung bình',
+    temperature: '18-30°C',
+    humidity: 'Trung bình đến cao',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều nắng để ra hoa thơm, thiếu nắng hoa ít và nhạt hương.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới đều khi đất bề mặt khô, tăng cường bón phân vào mùa ra hoa.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa sau mùa hoa để tạo dáng và kích thích ra hoa mùa sau.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1587132137056-bfbf0166836e?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'adenium',
+    name: 'Sứ Thái (Adenium)',
+    scientificName: 'Adenium obesum',
+    category: 'Ngoài trời',
+    shortDescription: 'Cây bonsai nhiệt đới, thân phình to, hoa đỏ hồng.',
+    description:
+      'Adenium (Sứ Thái) có thân gốc phình to tích nước rất bắt mắt, hoa đỏ-hồng nổi bật và cực kỳ chịu nắng.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Thấp',
+    difficulty: 'Trung bình',
+    temperature: '22-35°C',
+    humidity: 'Thấp (<40%)',
+    toxicity: 'Rất độc với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng mạnh nhiều tiếng/ngày để ra hoa và phát triển thân đẹp.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới ít, đặc biệt mùa mưa, để tránh thối gốc phình.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Dùng đất thoát nước nhanh và chậu nhỏ hơn kích thước thân để rễ không úng.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1597595337804-df30d2e9c0c4?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: true,
+    wateringFrequencyLabel: '1 lần/2 tuần',
+  },
+
+  // ─── THỦY SINH ──────────────────────────────────────────────────────────
+  {
+    id: 'water-hyacinth',
+    name: 'Bèo Tây (Lục Bình)',
+    scientificName: 'Pontederia crassipes',
+    category: 'Thủy sinh',
+    shortDescription: 'Nổi trên nước, hoa tím đẹp, làm sạch nước tự nhiên.',
+    description:
+      'Lục Bình (Water Hyacinth) là cây thủy sinh nổi với hoa tím đẹp, có khả năng hấp thụ kim loại nặng và làm sạch nước tự nhiên.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Cao',
+    difficulty: 'Dễ',
+    temperature: '22-35°C',
+    humidity: 'Rất cao (môi trường nước)',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Không cần đất, chỉ cần ngâm rễ trong nước đủ sâu.'
+      },
+      {
+        step: 2,
+        title: 'Ánh sáng',
+        content: 'Cần nắng để ra hoa, đặt ở chỗ thoáng nắng.'
+      },
+      {
+        step: 3,
+        title: 'Tưới nước',
+        content: 'Cắt tỉa khi cây lan quá nhiều để không che phủ toàn bộ mặt nước.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: 'Sống trong nước',
+  },
+  {
+    id: 'lotus',
+    name: 'Hoa Sen',
+    scientificName: 'Nelumbo nucifera',
+    category: 'Thủy sinh',
+    shortDescription: 'Quốc hoa Việt Nam, hoa lớn thơm ngát.',
+    description:
+      'Hoa Sen là biểu tượng văn hóa Việt Nam, trồng trong chậu nước lớn hoặc hồ nhỏ, hoa to và hương thơm đặc trưng.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Cao',
+    difficulty: 'Trung bình',
+    temperature: '24-35°C',
+    humidity: 'Rất cao (môi trường nước)',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần ít nhất 6 tiếng nắng trực tiếp mỗi ngày để ra hoa.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Trồng trong chậu đất sét giữ nước, mực nước duy trì 20-30 cm.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân viên chuyên dụng cho cây thủy sinh để kích thích ra hoa.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Hạt sen có thể nảy mầm sau hàng trăm năm — kỷ lục là 1.300 năm.',
+      'Lá sen có khả năng tự làm sạch nhờ bề mặt siêu kỵ nước, gọi là hiệu ứng "lotus effect".',
+      'Hoa sen nở buổi sáng và khép lại buổi chiều trong 3-4 ngày rồi tàn.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1459156212016-c812468e2115?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: 'Sống trong nước',
+  },
+  {
+    id: 'water-lily',
+    name: 'Súng Nước',
+    scientificName: 'Nymphaea lotus',
+    category: 'Thủy sinh',
+    shortDescription: 'Hoa nổi trên mặt nước, nhiều màu sắc.',
+    description:
+      'Súng Nước (Water Lily) trồng trong hồ hoặc chậu lớn, hoa nổi trên mặt nước với nhiều màu trắng, hồng, vàng, tím.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Cao',
+    difficulty: 'Trung bình',
+    temperature: '22-30°C',
+    humidity: 'Rất cao (môi trường nước)',
+    toxicity: 'Độc nhẹ với chó và mèo',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng đủ để ra hoa, mực nước 30-50 cm tùy loại giống.'
+      },
+      {
+        step: 2,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Trồng trong chậu đất nặng đặt dưới đáy hồ, không để giá thể nổi.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân viên thủy sinh định kỳ hằng tháng trong mùa sinh trưởng.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1471194402529-8e0f5a675de6?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: 'Sống trong nước',
+  },
+
+  // ─── ĂN ĐƯỢC / THẢO MỘC ─────────────────────────────────────────────────
+  {
+    id: 'basil',
+    name: 'Húng Quế',
+    scientificName: 'Ocimum basilicum',
+    category: 'Thảo mộc',
+    shortDescription: 'Thảo mộc nấu ăn thơm ngon, dễ trồng tại nhà.',
+    description:
+      'Húng Quế (Basil) là thảo mộc quen thuộc trong ẩm thực Việt và Ý, dễ trồng trong chậu nhỏ trên bếp hoặc bệ cửa sổ.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '18-30°C',
+    humidity: 'Trung bình',
+    toxicity: 'An toàn với người, độc nhẹ với thú cưng khi ăn nhiều',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Giữ đất ẩm đều, không để đất khô quá nhưng cũng không úng.'
+      },
+      {
+        step: 2,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt ngọn thường xuyên để cây ra nhánh và không ra hoa sớm.'
+      },
+      {
+        step: 3,
+        title: 'Ánh sáng',
+        content: 'Thu hoạch lá vào buổi sáng khi hàm lượng tinh dầu cao nhất.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1590763760836-3898bb73b5e9?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '3 lần/tuần',
+  },
+  {
+    id: 'chili-pepper',
+    name: 'Ớt Chỉ Thiên',
+    scientificName: 'Capsicum frutescens',
+    category: 'Thảo mộc',
+    shortDescription: 'Trái đỏ nhỏ sai trĩu, vừa đẹp vừa ăn được.',
+    description:
+      'Ớt Chỉ Thiên trái chỉ thẳng lên trời, sai quả, màu xanh-vàng-đỏ theo độ chín rất trang trí và thu hoạch để nấu ăn.',
+    lightLevel: 'Sáng trực tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '20-32°C',
+    humidity: 'Trung bình',
+    toxicity: 'An toàn với người, độc nhẹ với thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nắng nhiều để trái chín đều và cây ra quả sai.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới khi đất bắt đầu khô, tăng lượng tưới khi cây đang đậu quả.'
+      },
+      {
+        step: 3,
+        title: 'Dinh dưỡng & Đất',
+        content: 'Bón phân cân bằng định kỳ để cây ra hoa và đậu quả liên tục.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1583119022894-919a68a3d0e3?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+];
+
+// ─── DỮ LIỆU GỐC ─────────────────────────────────────────────────────────────
+
+const libraryPlantSeedData = [
+  {
+    id: 'fiddle-leaf-fig',
+    name: 'Fiddle Leaf Fig',
+    scientificName: 'Ficus lyrata',
+    category: 'Trong nhà',
+    shortDescription: 'Bản giao hưởng của những tán lá rộng, yêu cầu ánh sáng gián tiếp và độ ẩm ổn định.',
+    description:
+      'Fiddle Leaf Fig (Bàng Singapore) nổi bật với tán lá to và dáng cao, hợp làm điểm nhấn trong phòng khách hoặc văn phòng.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Trung bình',
+    temperature: '16-27°C',
+    humidity: 'Trung bình đến cao (40-60%)',
+    toxicity: 'Độc nhẹ với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Đặt gần cửa sổ có ánh sáng tán xạ, tránh nắng gắt trực tiếp.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới khi bề mặt đất khô 2-3 cm, không để úng rễ.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1593691512422-28cb17fb9b83?auto=format&fit=crop&w=1200&q=80',
+    isTrending: true,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'snake-plant',
+    name: 'Snake Plant',
+    scientificName: 'Dracaena trifasciata',
+    category: 'Trong nhà',
+    shortDescription: 'Sức sống mãnh liệt, lọc không khí tuyệt vời và không cần tưới nước thường xuyên.',
+    description:
+      'Snake Plant (Lưỡi Hổ) là lựa chọn phù hợp cho người mới bắt đầu nhờ khả năng chịu hạn tốt và dễ thích nghi môi trường.',
+    lightLevel: 'Ít sáng',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '15-30°C',
+    humidity: 'Thấp đến trung bình',
+    toxicity: 'Độc nhẹ với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Tưới thưa, khoảng 7-14 ngày/lần tùy độ ẩm không khí.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Dùng chậu thoát nước tốt để tránh thối gốc.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1598880940080-ff9a29891b85?auto=format&fit=crop&w=1200&q=80',
+    badge: 'water',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'monstera',
+    name: 'Monstera',
+    scientificName: 'Monstera deliciosa',
+    category: 'Trong nhà',
+    shortDescription: 'Cây trầu bà lá xẻ mang vẻ đẹp nhiệt đới ấn tượng cho mọi không gian sống.',
+    description:
+      'Monstera có lá xẻ đẹp mắt, phù hợp làm cây trang trí chủ đạo cho không gian sống theo phong cách hiện đại.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '18-30°C',
+    humidity: 'Trung bình đến cao (50-70%)',
+    toxicity: 'Độc với người và thú cưng, chứa calcium oxalate',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Tưới nước',
+        content: 'Giữ đất ẩm vừa, tưới khi mặt đất bắt đầu se khô.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Ưa môi trường thoáng khí, độ ẩm trung bình đến cao.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1200&q=80',
+    badge: 'sun',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'string-of-pearls',
+    name: 'String of Pearls',
+    scientificName: 'Senecio rowleyanus',
+    category: 'Sen đá',
+    shortDescription: 'Loại mọng nước chuỗi hạt này mọc rủ rất đẹp, thích hợp treo ban công.',
+    description:
+      'String of Pearls là dòng sen đá thân rủ, nổi bật với chuỗi lá tròn như hạt ngọc và khả năng chịu hạn tốt.',
+    lightLevel: 'BRIGHT INDIRECT',
+    waterNeed: 'Thấp',
+    difficulty: 'Trung bình',
+    temperature: '18-24°C',
+    humidity: 'Thấp (<40%)',
+    toxicity: 'Độc với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Cần nhiều ánh sáng để giữ dáng, tránh thiếu sáng kéo dài.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Chỉ tưới khi đất khô hoàn toàn để tránh úng.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1526397751294-331021109fbd?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: true,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'aloe-vera',
+    name: 'Aloe Vera',
+    scientificName: 'Aloe barbadensis miller',
+    category: 'Sen đá',
+    shortDescription: 'Vừa là cây cảnh vừa là dược liệu quý với khả năng làm dịu da tức thì.',
+    description:
+      'Aloe Vera (Nha Đam) là loại mọng nước dễ sống, lá dày chứa gel thường dùng trong chăm sóc da tự nhiên.',
+    lightLevel: 'Sáng trực tiếp nhẹ',
+    waterNeed: 'Thấp',
+    difficulty: 'Dễ',
+    temperature: '18-30°C',
+    humidity: 'Thấp (<40%)',
+    toxicity: 'Độc nhẹ khi ăn, gel ngoài da an toàn',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Ưa ánh sáng mạnh, nên đặt gần ban công hoặc cửa sổ.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới ít, đảm bảo đất khô trước lần tưới tiếp theo.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1509423350716-97f2360af9f4?auto=format&fit=crop&w=1200&q=80',
+    badge: 'camera',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'pothos',
+    name: 'Cây Trầu Bà',
+    scientificName: 'Epipremnum aureum',
+    category: 'Trong nhà',
+    shortDescription: 'Lá xanh mềm, dễ chăm, hợp kệ treo và bàn làm việc.',
+    description:
+      'Cây Trầu Bà là lựa chọn thân thiện cho người mới bắt đầu nhờ khả năng thích nghi tốt, tốc độ phát triển ổn định và dáng lá mềm mại rất hợp không gian sống hiện đại.',
+    lightLevel: 'Indirect sun',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '18-30°C',
+    humidity: 'Trung bình (40-60%)',
+    toxicity: 'Độc nhẹ với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Trầu bà ưa bóng râm, tránh ánh nắng trực tiếp gay gắt để làm cháy lá. Tưới nước khi thấy lớp đất mặt se khô.'
+      },
+      {
+        step: 2,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Giữ nhiệt độ phòng ổn định từ 18-30°C. Thường xuyên lau bụi trên lá để cây quang hợp tốt hơn.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: [
+      'Trầu Bà có thể leo hoặc rủ tự nhiên, rất hợp làm điểm nhấn gần cửa sổ.',
+      'Nếu lá nhạt màu, cây thường đang cần thêm ánh sáng gián tiếp.',
+      'Trầu Bà là một trong những cây nội thất được ưa chuộng nhất nhờ khả năng sống khỏe.',
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1604762524887-5a1a5f2c4f43?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  {
+    id: 'money-tree',
+    name: 'Money Tree',
+    scientificName: 'Pachira aquatica',
+    category: 'Phong thủy',
+    shortDescription: 'Biểu tượng tài lộc, thường đặt ở bàn làm việc.',
+    description:
+      'Money Tree (Kim Ngân) được ưa chuộng trong trang trí nội thất vì ý nghĩa phong thủy và khả năng thích nghi tốt.',
+    lightLevel: 'Sáng gián tiếp',
+    waterNeed: 'Trung bình',
+    difficulty: 'Dễ',
+    temperature: '18-27°C',
+    humidity: 'Trung bình (40-60%)',
+    toxicity: 'An toàn với người và thú cưng',
+    careGuide: [
+      {
+        step: 1,
+        title: 'Ánh sáng',
+        content: 'Đặt nơi có ánh sáng nhẹ, tránh nắng trưa trực tiếp.'
+      },
+      {
+        step: 2,
+        title: 'Tưới nước',
+        content: 'Tưới đều khi đất vừa se khô, không tưới quá tay.'
+      },
+      {
+        step: 3,
+        title: 'Cắt tỉa & Vệ sinh',
+        content: 'Cắt tỉa lá vàng định kỳ để cây luôn xanh khỏe.'
+      }
+    ],
+    growthTimeline: defaultGrowthTimeline,
+    funFacts: defaultFunFacts,
+    imageUrl:
+      'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=1200&q=80',
+    isTrending: false,
+    isRare: false,
+    wateringFrequencyLabel: '2 lần/tuần',
+  },
+  // ─── 30 CÂY BỔ SUNG ───────────────────────────────────────────────────────
+  ...newPlantSeedData,
+];
+
+module.exports = {
+  libraryPlantSeedData,
+};

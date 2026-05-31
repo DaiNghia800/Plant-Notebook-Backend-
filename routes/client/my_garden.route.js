@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../../controllers/client/my_garden.controller");
-const imageUpload = require("../../middlewares/imageUpload.middleware");
+const uploadCloudinary = require("../../middlewares/uploadCloudinary");
 
 /**
  * @swagger
