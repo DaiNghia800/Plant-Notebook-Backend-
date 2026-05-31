@@ -1,9 +1,14 @@
+const { User } = require("../../models");
 const db = require("../../config/firebase");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-require("dotenv").config()
+require("dotenv").config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
+
+function isHashedPassword(password) {
+  return typeof password === 'string' && password.startsWith('$2b$');
+}
 
 exports.login = async (req, res) => {
   try {
@@ -17,49 +22,65 @@ exports.login = async (req, res) => {
       });
     }
 
-    // 2. tìm user
-    const snapshot = await db
-      .collection("users")
-      .where("email", "==", email)
-      .limit(1)
-      .get();
+    // 2. tìm user trong SQL
+    let user = await User.findOne({ where: { email } });
+    let userId;
+    let userEmail;
+    let userName;
+    let passwordMatches = false;
 
-    if (snapshot.empty) {
-      return res.status(404).json({
-        message: "User không tồn tại",
-      });
+    if (user) {
+      userId = user.id;
+      userEmail = user.email;
+      userName = user.fullName;
+      if (isHashedPassword(user.password)) {
+        passwordMatches = await bcrypt.compare(password, user.password);
+      } else {
+        passwordMatches = user.password === password;
+      }
+    } else {
+      const snapshot = await db
+        .collection("users")
+        .where("email", "==", email)
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        return res.status(404).json({
+          message: "User không tồn tại",
+        });
+      }
+
+      const doc = snapshot.docs[0];
+      const firestoreUser = doc.data();
+      userId = doc.id;
+      userEmail = firestoreUser.email;
+      userName = firestoreUser.fullName || firestoreUser.name;
+      passwordMatches = await bcrypt.compare(password, firestoreUser.password);
     }
 
-    const doc = snapshot.docs[0];
-    const user = doc.data();
-
-    // 3. check password
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
+    if (!passwordMatches) {
       return res.status(401).json({
         message: "Sai mật khẩu",
       });
     }
 
-    // 4. tạo token
     const token = jwt.sign(
       {
-        id: doc.id,
-        email: user.email,
+        id: userId,
+        email: userEmail,
       },
       SECRET_KEY,
       { expiresIn: "1d" }
     );
 
-    // 5. response
     return res.json({
       message: "Đăng nhập thành công",
       token,
       user: {
-        id: doc.id,
-        email: user.email,
-        name: user.name,
+        id: userId,
+        email: userEmail,
+        name: userName,
       },
     });
   } catch (err) {
