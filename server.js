@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 require("dotenv").config();
 const cors = require("cors")
 const routeClient = require("./routes/client/index.route");
@@ -9,6 +10,7 @@ const { connectDB } = require("./config/database");
 const { initReminderJob } = require('./jobs/reminder.job');
 
 const app = express();
+app.use(cors());
 const port = process.env.PORT;
 
 connectDB();
