@@ -1,8 +1,10 @@
-const express = require('express');
-const router = express.Router();
-
+const authRoute = require("./auth.route");
+const systemConfig = require("../../config/system");
 const libraryPlantRoute = require("./library_plant.route");
 
-router.use("/library-plants", libraryPlantRoute);
+module.exports = (app) => {
+  const PATH_ADMIN = `/${systemConfig.prefixAdmin}`;
 
-module.exports = router;
+  app.use(`${PATH_ADMIN}/auth`, authRoute);
+  app.use(`${PATH_ADMIN}/library-plants`, libraryPlantRoute);
+};

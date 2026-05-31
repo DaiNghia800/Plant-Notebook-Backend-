@@ -1,166 +1,370 @@
-const db = require("../../config/firebase");
-const admin = require("firebase-admin");
+const db = require("../../models");
+const cloudinary = require("../../config/cloudinary");
+const { where } = require("sequelize");
 
-const GARDEN_COLLECTION = "my_garden_plants";
-const CATALOG_COLLECTION = "plants_catalog";
-const DEFAULT_USER_ID = "demo-user";
-const DEFAULT_CATALOG = [
-  {
-    id: "monstera",
-    name: "Monstera",
-    latin_name: "Monstera deliciosa",
-    image_url:
-      "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&w=1200&q=80",
-    category: "indoor",
-  },
-  {
-    id: "snake-plant",
-    name: "Snake Plant",
-    latin_name: "Sansevieria trifasciata",
-    image_url:
-      "https://images.unsplash.com/photo-1598880940080-ff9a29891b85?auto=format&fit=crop&w=1200&q=80",
-    category: "indoor",
-  },
-  {
-    id: "peace-lily",
-    name: "Peace Lily",
-    latin_name: "Spathiphyllum",
-    image_url:
-      "https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=1200&q=80",
-    category: "balcony",
-  },
-];
-
-const readUserId = (req) =>
-  req.headers["x-user-id"] || req.query.user_id || DEFAULT_USER_ID;
-
-const buildProfilePayload = (body, userId) => {
-  const reminder = body.reminder_setting || {};
-  return {
-    plant_id: body.plant_id || "",
-    name: body.name || "",
-    latin_name: body.latin_name || "",
-    nickname: body.nickname || "",
-    image_url: body.image_url || "",
-    photo_path: body.photo_path || "",
-    status: body.status || "healthy",
-    category: body.category || "indoor",
-    start_date: body.start_date || new Date().toISOString(),
-    reminder_setting: {
-      watering_cycle_days: Number(reminder.watering_cycle_days || 3),
-      fertilizing_cycle_days: Number(reminder.fertilizing_cycle_days || 14),
-      push_notification_enabled: Boolean(reminder.push_notification_enabled),
-    },
-    user_id: userId,
-  };
-};
-
-exports.getMyGardenPlants = async (req, res) => {
+module.exports.getMyGardenPlants = async (req, res) => {
   try {
-    const userId = readUserId(req);
-    const snapshot = await db
-      .collection(GARDEN_COLLECTION)
-      .where("user_id", "==", userId)
-      .get();
+    const gardenPlants = await db.GardenPlant.findAll({
+      include: [
+        { model: db.Plant, attributes: ['name', 'imageUrl'] },
+        { model: db.Reminder },
+        { model: db.User },
+        { model: db.Category },
+      ]
+    });
 
-    const data = snapshot.docs.map((doc) => ({ ...doc.data() }));
-
-    return res.status(200).json({ data });
+    return res.status(200).json({ success: true, data: gardenPlants });
   } catch (error) {
-    console.error("getMyGardenPlants error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ success: false, message: error.message });
   }
-};
+}
 
-exports.getPlantCatalog = async (_req, res) => {
+module.exports.getMyGardenPlantById = async (req, res) => {
   try {
-    const snapshot = await db.collection(CATALOG_COLLECTION).get();
-    const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const { id } = req.params;
+    const gardenPlant = await db.GardenPlant.findOne({
+      where: { id: id },
+      include: [
+        { model: db.Plant, attributes: ['name', 'imageUrl'] },
+        { model: db.Reminder },
+        { model: db.User },
+        { model: db.Category },
+      ]
+    });
 
-    return res.status(200).json({ data });
+    return res.status(200).json({ success: true, data: gardenPlant });
   } catch (error) {
-    console.error("getPlantCatalog error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ success: false, message: error.message });
   }
-};
+}
 
-exports.seedPlantCatalog = async (_req, res) => {
+module.exports.createMyGardenPlant = async (req, res) => {
   try {
-    const batch = db.batch();
-    DEFAULT_CATALOG.forEach((plant) => {
-      const ref = db.collection(CATALOG_COLLECTION).doc(plant.id);
-      batch.set(ref, {
-        name: plant.name,
-        latin_name: plant.latin_name,
-        image_url: plant.image_url,
-        category: plant.category,
+    const {
+      plantId,
+      plantName,
+      categoryId,
+      category,
+      status,
+      startDate,
+      startedAt,
+      wateringCycle,
+      fertilizingCycle,
+      isPushEnabled,
+      userId,
+    } = req.body;
+    let imageUrl = null;
+    if (req.file) {
+      const base64 = req.file.buffer.toString('base64');
+      const dataUri = `data:${req.file.mimetype};base64,${base64}`;
+      const uploadResult = await cloudinary.uploader.upload(dataUri, {
+        folder: 'garden',
+        resource_type: 'image',
       });
+      imageUrl = uploadResult.secure_url;
+    }
+
+    // Find category by id first, then by name.
+    let categoryRecord = null;
+    if (categoryId) {
+      categoryRecord = await db.Category.findByPk(categoryId);
+    }
+    if (!categoryRecord && category) {
+      categoryRecord = await db.Category.findOne({ where: { name: category } });
+    }
+    if (!categoryRecord) {
+      return res.status(400).json({ success: false, message: 'Category not found' });
+    }
+
+    // Create or reuse plant record.
+    let plantRecord = null;
+    if (plantName) {
+      const plant = await db.Plant.findOne({ where: { name: plantName } });
+      if(plant){
+        return res.status(400).json({ success: false, message: 'Plant name already exists.' });
+      } else {
+        plantRecord = await db.Plant.create({
+        name: plantName,
+        description: '',
+        imageUrl,
+      });
+      }
+    } else {
+      return res.status(400).json({ success: false, message: 'Plant name is required' });
+    }
+
+    const gardenPlant = await db.GardenPlant.create({
+      userId,
+      plantId: plantRecord.id,
+      categoryId: categoryRecord.id,
+      status,
+      startedAt: new Date(startDate || startedAt),
+      imageUrl,
     });
-    await batch.commit();
-    return res.status(200).json({ message: "Catalog seeded" });
+
+    const startedAtDate = new Date(startDate || startedAt);
+    const parsedWatering = parseFloat(String(wateringCycle));
+    const parsedFertilizing = parseFloat(String(fertilizingCycle));
+    const pushEnabled = String(isPushEnabled).toLowerCase() === 'true';
+
+    const reminders = [];
+    if (!Number.isNaN(parsedWatering) && parsedWatering > 0) {
+      reminders.push({
+        gardenPlantId: gardenPlant.id,
+        type: 'Tưới nước',
+        frequencyDays: parsedWatering,
+        lastActionAt: startedAtDate,
+        isPushEnabled: pushEnabled,
+      });
+    }
+    if (!Number.isNaN(parsedFertilizing) && parsedFertilizing > 0) {
+      reminders.push({
+        gardenPlantId: gardenPlant.id,
+        type: 'Bón phân',
+        frequencyDays: parsedFertilizing,
+        lastActionAt: startedAtDate,
+        isPushEnabled: pushEnabled,
+      });
+    }
+    await db.Reminder.bulkCreate(reminders);
+
+    const createdPlant = await db.GardenPlant.findByPk(gardenPlant.id, {
+      include: [
+        { model: db.Plant, attributes: ['name', 'imageUrl'] },
+        { model: db.Reminder },
+        { model: db.User },
+        { model: db.Category },
+      ]
+    });
+
+    return res.status(201).json({ success: true, data: createdPlant });
   } catch (error) {
-    console.error("seedPlantCatalog error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+module.exports.getPlantCategory = async (req, res) => {
+  try {
+    const category = await db.Category.findAll();
+
+    return res.status(200).json({ success: true, data: category });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+module.exports.createOrUpdateReminders = async (req, res) => {
+  try {
+    const { gardenPlantId, wateringCycleDays, fertilizingCycleDays, isPushEnabled } = req.body;
+
+    if (!gardenPlantId) {
+      return res.status(400).json({ success: false, message: 'gardenPlantId is required' });
+    }
+
+    // Delete existing reminders for this plant
+    await db.Reminder.destroy({ where: { gardenPlantId } });
+
+    const reminders = [];
+    if (wateringCycleDays && wateringCycleDays > 0) {
+      reminders.push({
+        gardenPlantId,
+        type: 'Tưới nước',
+        frequencyDays: wateringCycleDays,
+        lastActionAt: new Date(),
+        isPushEnabled: !!isPushEnabled,
+      });
+    }
+    if (fertilizingCycleDays && fertilizingCycleDays > 0) {
+      reminders.push({
+        gardenPlantId,
+        type: 'Bón phân',
+        frequencyDays: fertilizingCycleDays,
+        lastActionAt: new Date(),
+        isPushEnabled: !!isPushEnabled,
+      });
+    }
+
+    await db.Reminder.bulkCreate(reminders);
+
+    return res.status(201).json({ success: true, data: reminders });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+module.exports.updateMyGardenPlant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const gardenPlant = await db.GardenPlant.findByPk(id);
+    if (!gardenPlant) {
+      return res.status(404).json({ success: false, message: 'Garden plant not found' });
+    }
+
+    console.log(req.body)
+
+    const {
+      plantId,
+      plantName,
+      categoryId,
+      status,
+      startedAt,
+      startDate,
+      wateringCycleDays,
+      fertilizingCycleDays,
+      isPushEnabled,
+      reminderSetting,
+    } = req.body;
+    let plantRecord = null;
+    if (plantId) {
+      const plant = await db.Plant.findByPk(plantId);
+      if(plant){
+        plant.name = plantName;
+        plant.save();
+      }else {
+        return res.status(400).json({ success: false, message: 'Plant is not found' });
+      }
+    } 
+
+    let categoryRecord = null;
+    if (categoryId) {
+      categoryRecord = await db.Category.findByPk(categoryId);
+    }
+    if (!categoryRecord) {
+      return res.status(400).json({ success: false, message: 'Category not found' });
+    }
+
+    if (req.file) {
+      const base64 = req.file.buffer.toString('base64');
+      const dataUri = `data:${req.file.mimetype};base64,${base64}`;
+      const uploadResult = await cloudinary.uploader.upload(dataUri, {
+        folder: 'garden',
+        resource_type: 'image',
+      });
+      gardenPlant.imageUrl = uploadResult.secure_url;
+      const plantRecord = await db.Plant.findByPk(gardenPlant.plantId);
+      if (plantRecord) {
+        plantRecord.imageUrl = uploadResult.secure_url;
+        await plantRecord.save();
+      }
+    }
+
+    if (status) {
+      gardenPlant.status = status;
+    }
+
+    if(categoryRecord){
+      gardenPlant.categoryId = categoryId;
+    }
+    const startedAtValue = startedAt || startDate;
+    if (startedAtValue) {
+      gardenPlant.startedAt = new Date(startedAtValue);
+    }
+    await gardenPlant.save();
+
+    const wateringDays = Number(
+      wateringCycleDays ?? reminderSetting?.frequencyDays ?? 0,
+    );
+    const fertilizingDays = Number(fertilizingCycleDays ?? 0);
+    const pushEnabled = Boolean(
+      isPushEnabled ?? reminderSetting?.isPushEnabled ?? true,
+    );
+
+    await db.Reminder.destroy({ where: { gardenPlantId: gardenPlant.id } });
+    const reminders = [];
+    if (!Number.isNaN(wateringDays) && wateringDays > 0) {
+      reminders.push({
+        gardenPlantId: gardenPlant.id,
+        type: 'Tưới nước',
+        frequencyDays: wateringDays,
+        lastActionAt: new Date(),
+        isPushEnabled: pushEnabled,
+      });
+    }
+    if (!Number.isNaN(fertilizingDays) && fertilizingDays > 0) {
+      reminders.push({
+        gardenPlantId: gardenPlant.id,
+        type: 'Bón phân',
+        frequencyDays: fertilizingDays,
+        lastActionAt: new Date(),
+        isPushEnabled: pushEnabled,
+      });
+    }
+    if (reminders.length > 0) {
+      await db.Reminder.bulkCreate(reminders);
+    }
+
+    const updatedPlant = await db.GardenPlant.findByPk(gardenPlant.id, {
+      include: [
+        { model: db.Plant, attributes: ['name', 'imageUrl'] },
+        { model: db.Reminder },
+        { model: db.User },
+        { model: db.Category },
+      ],
+    });
+
+    return res.status(200).json({ success: true, data: updatedPlant });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-exports.createMyGardenPlant = async (req, res) => {
+module.exports.deleteMyGardenPlant = async (req, res) => {
   try {
-    const userId = readUserId(req);
-    const profile = buildProfilePayload(req.body, userId);
-    if (!profile.plant_id) {
-      return res.status(400).json({ message: "plant_id is required" });
+    const { id } = req.params;
+    const gardenPlant = await db.GardenPlant.findByPk(id);
+    if (!gardenPlant) {
+      return res.status(404).json({ success: false, message: 'Garden plant not found' });
     }
-
-    const docRef = await db.collection(GARDEN_COLLECTION).add({
-      ...profile,
-      created_at: admin.firestore.FieldValue.serverTimestamp(), 
-      updated_at: admin.firestore.FieldValue.serverTimestamp(), // Firebase tự điền giờ cập nhật
-    });
-    return res.status(201).json({id: docRef.id, data: profile });
+    await db.Reminder.destroy({ where: { gardenPlantId: gardenPlant.id } });
+    await gardenPlant.destroy();
+    return res.status(200).json({ success: true, message: 'Deleted successfully' });
   } catch (error) {
-    console.error("createMyGardenPlant error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-exports.updateMyGardenPlant = async (req, res) => {
+module.exports.getCareHistory = async (req, res) => {
   try {
-    const plantDocId = req.params.id;
-    const userId = readUserId(req);
-
-    const docRef = db.collection(GARDEN_COLLECTION).doc(plantDocId);
-    
-    const doc = await docRef.get();
-    if (!doc.exists || doc.data().user_id !== userId) {
-      return res.status(404).json({ message: "Không tìm thấy cây hoặc bạn không có quyền" });
-    }
-
-    await docRef.update({
-      ...req.body, 
-      updated_at: admin.firestore.FieldValue.serverTimestamp() 
+    const { gardenPlantId } = req.params;
+    const careHistory = await db.CareHistory.findAll({
+      where: { gardenPlantId },
+      order: [['performedAt', 'DESC']],
+      limit: 5
     });
 
-    return res.status(200).json({ message: "Đã cập nhật" });
+    return res.status(200).json({ success: true, data: careHistory });
   } catch (error) {
-    return res.status(500).json({ message: "Lỗi hệ thống" });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-exports.deleteMyGardenPlant = async (req, res) => {
+module.exports.createCareHistory = async (req, res) => {
   try {
-    const userId = readUserId(req);
-    const plantId = req.params.id;
-    const docRef = db.collection(GARDEN_COLLECTION).doc(toDocId(userId, plantId));
-    const doc = await docRef.get();
-    if (!doc.exists) {
-      return res.status(404).json({ message: "Plant profile not found" });
+    console.log(req.body)
+    const { gardenPlantId, type, actionDate, notes } = req.body;
+
+    // Validate garden plant exists
+    const gardenPlant = await db.GardenPlant.findByPk(gardenPlantId);
+    if (!gardenPlant) {
+      return res.status(404).json({ success: false, message: 'Garden plant not found' });
     }
 
-    await docRef.delete();
-    return res.status(200).json({ message: "Deleted" });
+    const actionType = type === 'watering' ? 'Tưới nước' : 'Bón phân';
+    const careAction = await db.CareHistory.create({
+      gardenPlantId,
+      actionType: actionType,
+      performedAt: actionDate ? new Date(actionDate) : new Date(),
+    });
+
+    const reminder = await db.Reminder.findOne({where: {gardenPlantId: gardenPlantId, type: actionType}});
+    console.log(reminder)
+    if(reminder){
+      reminder.lastActionAt = actionDate ? new Date(actionDate) : new Date();
+      await reminder.save();
+    }
+
+    return res.status(201).json({ success: true, data: careAction });
   } catch (error) {
-    console.error("deleteMyGardenPlant error:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
