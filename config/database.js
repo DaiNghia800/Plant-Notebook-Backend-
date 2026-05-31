@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config(); 
+require('dotenv').config();
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -9,7 +9,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
-    logging: true, 
+    logging: true,
     pool: {
       max: 5,
       min: 0,
