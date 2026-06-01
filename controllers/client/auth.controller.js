@@ -3,7 +3,11 @@ const { db } = require("../../config/firebase");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const admin = require("firebase-admin");
+const { sendOTP } = require("../../utils/mailer");
 require("dotenv").config();
+
+// In-memory store for OTPs: { "email@example.com": { otp: "123456", expiresAt: 123456789 } }
+const otpStore = {};
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -259,6 +263,107 @@ exports.googleAuth = async (req, res) => {
     });
   } catch (err) {
     console.error("Google Auth Error:", err);
+    return res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Thiếu email" });
+
+    // 1. Kiểm tra user có tồn tại không
+    let userExists = false;
+    try {
+      const user = await User.findOne({ where: { email } });
+      if (user) userExists = true;
+    } catch (err) {}
+
+    if (!userExists) {
+      const snapshot = await db.collection("users").where("email", "==", email).limit(1).get();
+      if (!snapshot.empty) userExists = true;
+    }
+
+    if (!userExists) {
+      return res.status(404).json({ message: "Email không tồn tại trong hệ thống" });
+    }
+
+    // 2. Tạo mã OTP 6 số ngẫu nhiên
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 phút
+
+    // 3. Lưu OTP
+    otpStore[email] = { otp, expiresAt };
+
+    // 4. Gửi email
+    const sent = await sendOTP(email, otp);
+    if (!sent) {
+      return res.status(500).json({ message: "Lỗi khi gửi email OTP" });
+    }
+
+    return res.json({ message: "Mã OTP đã được gửi đến email của bạn" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
+exports.verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ message: "Thiếu email hoặc OTP" });
+
+    const record = otpStore[email];
+    if (!record) return res.status(400).json({ message: "Chưa gửi mã OTP hoặc OTP đã hết hạn" });
+
+    if (Date.now() > record.expiresAt) {
+      delete otpStore[email];
+      return res.status(400).json({ message: "Mã OTP đã hết hạn" });
+    }
+
+    if (record.otp !== otp) {
+      return res.status(400).json({ message: "Mã OTP không chính xác" });
+    }
+
+    // Xác thực thành công
+    return res.json({ message: "Xác thực OTP thành công" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) return res.status(400).json({ message: "Thiếu thông tin" });
+
+    // Xác thực lại OTP để bảo mật trước khi đổi pass
+    const record = otpStore[email];
+    if (!record || Date.now() > record.expiresAt || record.otp !== otp) {
+      return res.status(400).json({ message: "Mã OTP không hợp lệ hoặc đã hết hạn" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Cập nhật SQL
+    try {
+      await User.update({ password: hashedPassword }, { where: { email } });
+    } catch (err) {}
+
+    // Cập nhật Firestore
+    const snapshot = await db.collection("users").where("email", "==", email).limit(1).get();
+    if (!snapshot.empty) {
+      const docId = snapshot.docs[0].id;
+      await db.collection("users").doc(docId).update({ password: hashedPassword });
+    }
+
+    // Xóa OTP
+    delete otpStore[email];
+
+    return res.json({ message: "Đặt lại mật khẩu thành công" });
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ message: "Lỗi server" });
   }
 };
