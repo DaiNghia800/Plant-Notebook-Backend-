@@ -1,13 +1,23 @@
+'use strict';
 const authRoute = require("./auth.route");
-const systemConfig = require("../../config/system");
 const libraryPlantRoute = require("./library_plant.route");
 const geminiKeysRoute = require("./gemini_key.route");
-
+const usersRoute = require("./users.route");
+const dashboardRoute = require("./dashboard.route");
+const logsRoute = require("./logs.route");
+const adminRateLimiter = require("../../middlewares/adminRateLimiter");
+const systemConfig = require("../../config/system");
 
 module.exports = (app) => {
   const PATH_ADMIN = `/${systemConfig.prefixAdmin}`;
 
+  // Global admin rate limiter
+  app.use(PATH_ADMIN, adminRateLimiter);
+
   app.use(`${PATH_ADMIN}/auth`, authRoute);
   app.use(`${PATH_ADMIN}/library-plants`, libraryPlantRoute);
   app.use(`${PATH_ADMIN}/gemini-keys`, geminiKeysRoute);
+  app.use(`${PATH_ADMIN}/users`, usersRoute);
+  app.use(`${PATH_ADMIN}/dashboard`, dashboardRoute);
+  app.use(`${PATH_ADMIN}/logs`, logsRoute);
 };
