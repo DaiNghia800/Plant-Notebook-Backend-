@@ -40,9 +40,28 @@ class LibraryPlantAdminService {
   }
 
   async seedPlants() {
+    const mapCategory = (rawCategory) => {
+      if (!rawCategory) return "Trong nhà";
+      const cat = rawCategory.trim().toLowerCase();
+      if (cat.includes("trong nhà") || cat.includes("dương xỉ") || cat.includes("thủy sinh") || cat.includes("nước") || cat.includes("phong thủy")) {
+        return "Trong nhà";
+      }
+      if (cat.includes("mọng nước") || cat.includes("xương rồng") || cat.includes("sen đá") || cat.includes("ban công")) {
+        return "Ban công";
+      }
+      if (cat.includes("gia vị") || cat.includes("bonsai") || cat.includes("ngoài trời") || cat.includes("sân vườn") || cat.includes("thảo mộc")) {
+        return "Ngoài trời";
+      }
+      return "Trong nhà"; // Mặc định
+    };
+
     const results = [];
     for (const item of libraryPlantSeedData) {
-      const payload = { ...item, approvalStatus: 'approved' };
+      const payload = { 
+        ...item, 
+        category: mapCategory(item.category),
+        approvalStatus: 'approved' 
+      };
       const [plant, created] = await LibraryPlant.findOrCreate({
         where: { id: item.id },
         defaults: payload

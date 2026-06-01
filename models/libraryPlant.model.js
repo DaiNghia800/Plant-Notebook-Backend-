@@ -55,7 +55,7 @@ const LibraryPlant = sequelize.define("LibraryPlant", {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-  temperatureRange: {
+  temperature: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -67,7 +67,7 @@ const LibraryPlant = sequelize.define("LibraryPlant", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  humidityLevel: {
+  humidity: {
     type: DataTypes.STRING,
     allowNull: true,
   },
