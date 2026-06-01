@@ -1,5 +1,4 @@
 const db = require("../../models");
-const cloudinary = require("../../config/cloudinary");
 const { where } = require("sequelize");
 
 module.exports.getMyGardenPlants = async (req, res) => {
@@ -53,16 +52,7 @@ module.exports.createMyGardenPlant = async (req, res) => {
       isPushEnabled,
       userId,
     } = req.body;
-    let imageUrl = null;
-    if (req.file) {
-      const base64 = req.file.buffer.toString('base64');
-      const dataUri = `data:${req.file.mimetype};base64,${base64}`;
-      const uploadResult = await cloudinary.uploader.upload(dataUri, {
-        folder: 'garden',
-        resource_type: 'image',
-      });
-      imageUrl = uploadResult.secure_url;
-    }
+    let imageUrl = req.body.imageUrl || null;
 
     // Find category by id first, then by name.
     let categoryRecord = null;
@@ -233,17 +223,11 @@ module.exports.updateMyGardenPlant = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Category not found' });
     }
 
-    if (req.file) {
-      const base64 = req.file.buffer.toString('base64');
-      const dataUri = `data:${req.file.mimetype};base64,${base64}`;
-      const uploadResult = await cloudinary.uploader.upload(dataUri, {
-        folder: 'garden',
-        resource_type: 'image',
-      });
-      gardenPlant.imageUrl = uploadResult.secure_url;
+    if (req.body.imageUrl) {
+      gardenPlant.imageUrl = req.body.imageUrl;
       const plantRecord = await db.Plant.findByPk(gardenPlant.plantId);
       if (plantRecord) {
-        plantRecord.imageUrl = uploadResult.secure_url;
+        plantRecord.imageUrl = req.body.imageUrl;
         await plantRecord.save();
       }
     }

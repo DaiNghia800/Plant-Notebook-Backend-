@@ -58,7 +58,7 @@ router.get("/plants/:id", controller.getMyGardenPlantById);
  *       400:
  *         description: Bad request
  */
-router.post("/plants", imageUpload.upload, controller.createMyGardenPlant);
+router.post("/plants", uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.createMyGardenPlant);
 
 /**
  * @swagger
@@ -122,7 +122,7 @@ router.post("/reminders", controller.createOrUpdateReminders);
 //  *       200:
 //  *         description: Updated
 //  */
-router.put("/plants/:id", imageUpload.upload, controller.updateMyGardenPlant);
+router.put("/plants/:id", uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.updateMyGardenPlant);
 
 // /**
 //  * @swagger

@@ -159,7 +159,14 @@ class GeminiScannerService {
     }
 
     const decoded = JSON.parse(responseText);
-    const textContent = decoded.candidates?.[0]?.content?.parts?.[0]?.text;
+    const candidate = decoded.candidates?.[0];
+    const finishReason = candidate?.finishReason;
+    console.log(`[GeminiScannerService] API response finishReason: ${finishReason}`);
+    if (finishReason && finishReason !== 'STOP') {
+      console.warn(`[GeminiScannerService] Warning: Generation stopped with reason: ${finishReason}`);
+      console.warn(`[GeminiScannerService] Full candidate object:`, JSON.stringify(candidate));
+    }
+    const textContent = candidate?.content?.parts?.[0]?.text;
 
     if (!textContent || textContent.trim() === '') {
       throw new Error('Gemini returned empty content');

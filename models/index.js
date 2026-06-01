@@ -23,6 +23,7 @@ fs
       file.indexOf('.') !== 0 &&
       file !== basename &&
       file.slice(-3) === '.js' &&
+      !file.endsWith('.model.js') &&
       file.indexOf('.test.js') === -1
     );
   })

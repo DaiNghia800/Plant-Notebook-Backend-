@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/plant.controller");
-const authMiddleware = require("../middleware/auth.middleware");
+const authMiddleware = require("../middlewares/auth.middleware");
 
 // ==================== MY GARDEN / PLANT DETAIL (YÊU CẦU ĐĂNG NHẬP) ====================
 

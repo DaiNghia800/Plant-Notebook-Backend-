@@ -1,5 +1,5 @@
 const { User } = require("../../models");
-const db = require("../../config/firebase");
+const { db } = require("../../config/firebase");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const admin = require("firebase-admin");
@@ -13,26 +13,36 @@ function isHashedPassword(password) {
 
 exports.login = async (req, res) => {
   try {
-    console.log(await bcrypt.hash("123456", 10));
-    const { email, password } = req.body;
+    const { email, phone, password } = req.body;
+    const identifier = email || phone;
 
     // 1. validate
-    if (!email || !password) {
+    if (!identifier || !password) {
       return res.status(400).json({
-        message: "Thiếu email hoặc password",
+        message: "Thiếu email/số điện thoại hoặc password",
       });
     }
 
-    // 2. tìm user trong SQL
-    let user = await User.findOne({ where: { email } });
+    // 2. tìm user trong SQL (graceful fallback nếu DB chưa chạy)
+    let user = null;
     let userId;
-    let userEmail;
+    let userIdentifier;
     let userName;
     let passwordMatches = false;
 
+    try {
+      if (email) {
+        user = await User.findOne({ where: { email } });
+      } else if (phone) {
+        user = await User.findOne({ where: { phone } });
+      }
+    } catch (sqlErr) {
+      console.warn("SQL lookup skipped, fallback Firestore:", sqlErr.message);
+    }
+
     if (user) {
       userId = user.id;
-      userEmail = user.email;
+      userIdentifier = user.email || user.phone;
       userName = user.fullName;
       if (isHashedPassword(user.password)) {
         passwordMatches = await bcrypt.compare(password, user.password);
@@ -40,11 +50,21 @@ exports.login = async (req, res) => {
         passwordMatches = user.password === password;
       }
     } else {
-      const snapshot = await db
-        .collection("users")
-        .where("email", "==", email)
-        .limit(1)
-        .get();
+      // Fallback: tìm trong Firestore theo email hoặc phone
+      let snapshot;
+      if (email) {
+        snapshot = await db
+          .collection("users")
+          .where("email", "==", email)
+          .limit(1)
+          .get();
+      } else {
+        snapshot = await db
+          .collection("users")
+          .where("phone", "==", phone)
+          .limit(1)
+          .get();
+      }
 
       if (snapshot.empty) {
         return res.status(404).json({
@@ -55,7 +75,7 @@ exports.login = async (req, res) => {
       const doc = snapshot.docs[0];
       const firestoreUser = doc.data();
       userId = doc.id;
-      userEmail = firestoreUser.email;
+      userIdentifier = firestoreUser.email || firestoreUser.phone;
       userName = firestoreUser.fullName || firestoreUser.name;
       passwordMatches = await bcrypt.compare(password, firestoreUser.password);
     }
@@ -69,7 +89,7 @@ exports.login = async (req, res) => {
     const token = jwt.sign(
       {
         id: userId,
-        email: userEmail,
+        email: userIdentifier,
       },
       SECRET_KEY,
       { expiresIn: "1d" }
@@ -80,7 +100,7 @@ exports.login = async (req, res) => {
       token,
       user: {
         id: userId,
-        email: userEmail,
+        email: userIdentifier,
         name: userName,
       },
     });
@@ -91,6 +111,7 @@ exports.login = async (req, res) => {
     });
   }
 };
+
 
 exports.register = async (req, res) => {
   try {
@@ -172,9 +193,27 @@ exports.googleAuth = async (req, res) => {
       return res.status(400).json({ message: "Thiếu idToken" });
     }
 
-    // 1. Verify token
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const { uid, email, name, picture } = decodedToken;
+    // 1. Verify Google ID token qua Google tokeninfo endpoint
+    // (google_sign_in trả về Google ID token, không phải Firebase ID token)
+    let uid, email, name, picture;
+    try {
+      const tokenInfoRes = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`
+      );
+      const tokenInfo = await tokenInfoRes.json();
+
+      if (tokenInfo.error_description || tokenInfo.error || !tokenInfo.email) {
+        return res.status(401).json({ message: "Google token không hợp lệ" });
+      }
+
+      uid = tokenInfo.sub;
+      email = tokenInfo.email;
+      name = tokenInfo.name;
+      picture = tokenInfo.picture;
+    } catch (verifyErr) {
+      console.error("Token verification error:", verifyErr);
+      return res.status(401).json({ message: "Không thể xác minh token Google" });
+    }
 
     // 2. Check if user exists in db
     const snapshot = await db
@@ -220,6 +259,6 @@ exports.googleAuth = async (req, res) => {
     });
   } catch (err) {
     console.error("Google Auth Error:", err);
-    return res.status(401).json({ message: "Token không hợp lệ hoặc lỗi server" });
+    return res.status(500).json({ message: "Lỗi server" });
   }
 };

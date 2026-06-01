@@ -34,7 +34,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       lastNotificationSentAt: {
-        type: DataTypes.DATE,
+        type: Sequelize.DATE,
         allowNull: true, 
       },
       isPushEnabled: {
