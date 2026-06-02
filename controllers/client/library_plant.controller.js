@@ -66,7 +66,7 @@ exports.contributePlant = async (req, res) => {
       }
     }
 
-    const userId = req.headers['x-user-id'] || req.query.user_id || 'mobile-user';
+    const userId = req.user ? req.user.id : (req.headers['x-user-id'] || req.query.user_id || 'mobile-user');
     const contributedPlant = await libraryPlantService.contributePlant(req.body, userId);
     return res.status(201).json({
       message: 'Gửi đề xuất cây mới thành công, đang chờ Admin kiểm duyệt.',

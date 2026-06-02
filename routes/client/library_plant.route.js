@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const controller = require('../../controllers/client/library_plant.controller');
 const uploadCloudinary = require('../../middlewares/uploadCloudinary');
+const authMiddleware = require('../../middlewares/auth.middleware');
 
 /**
  * @swagger
@@ -112,7 +113,7 @@ router.get('/', controller.getAllPlants);
  *       500:
  *         description: Lỗi hệ thống nội bộ
  */
-router.post('/contribute', uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.contributePlant);
+router.post('/contribute', authMiddleware, uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.contributePlant);
 
 /**
  * @swagger
