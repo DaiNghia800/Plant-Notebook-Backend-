@@ -5,6 +5,8 @@ const geminiKeysRoute = require("./gemini_key.route");
 const usersRoute = require("./users.route");
 const dashboardRoute = require("./dashboard.route");
 const logsRoute = require("./logs.route");
+const rolesRoute = require("./roles.route");
+const permissionsRoute = require("./permissions.route");
 const adminRateLimiter = require("../../middlewares/adminRateLimiter");
 const auditMiddleware = require("../../middlewares/audit.middleware");
 const systemConfig = require("../../config/system");
@@ -23,4 +25,6 @@ module.exports = (app) => {
   app.use(`${PATH_ADMIN}/users`, usersRoute);
   app.use(`${PATH_ADMIN}/dashboard`, dashboardRoute);
   app.use(`${PATH_ADMIN}/logs`, logsRoute);
+  app.use(`${PATH_ADMIN}/roles`, rolesRoute);
+  app.use(`${PATH_ADMIN}/permissions`, permissionsRoute);
 };
