@@ -32,7 +32,9 @@ module.exports = {
     const user = await db.User.findByPk(id);
     if (!user) return null;
     await user.update(data);
-    return user;
+    const userData = user.toJSON();
+    delete userData.password;
+    return userData;
   },
 
   /** Delete a user */

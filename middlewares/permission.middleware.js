@@ -13,7 +13,7 @@ module.exports = (requiredPermission) => {
       const permissionService = require('../services/admin/permission.service');
       const has = await permissionService.hasPermission(roleId, requiredPermission);
       if (!has) {
-        return res.status(403).json({ err: 403, msg: 'Permission denied' });
+        return res.status(403).json({ err: 403, msg: 'Bạn không có quyền thực hiện hành động này' });
       }
       next();
     } catch (error) {

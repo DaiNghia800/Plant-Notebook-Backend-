@@ -3,6 +3,7 @@
  * Admin User Controller (CRUD + role assignment)
  */
 const userService = require('../../services/admin/user.service');
+const bcrypt = require('bcrypt');
 
 module.exports = {
   // GET /admin/users
@@ -22,7 +23,9 @@ module.exports = {
       const { id } = req.params;
       const user = await userService.getById(id);
       if (!user) return res.status(404).json({ err: 1, msg: 'User not found' });
-      return res.status(200).json({ err: 0, data: user });
+      // Remove password before sending
+      const { password, ...userData } = user.get({ plain: true });
+      return res.status(200).json({ err: 0, data: userData });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ err: -1, msg: 'Failed to fetch user' });
@@ -32,8 +35,12 @@ module.exports = {
   // POST /admin/users
   async create(req, res) {
     try {
-      const newUser = await userService.create(req.body);
-      return res.status(201).json({ err: 0, data: newUser });
+      const { password, ...rest } = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = await userService.create({ ...rest, password: hashedPassword });
+      // Exclude password from response
+      const { password: _, ...userData } = newUser.get({ plain: true });
+      return res.status(201).json({ err: 0, data: userData });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ err: -1, msg: 'Failed to create user' });

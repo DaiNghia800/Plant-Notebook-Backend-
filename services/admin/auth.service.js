@@ -12,9 +12,7 @@ module.exports.loginService = async ({ email, password }) => {
     const user = await db.User.findOne({
       where: { email },
       raw: true,
-      attributes: {
-        exclude: ['password']
-      }
+      attributes: { include: ['password'] }
     })
 
     // Verify password

@@ -10,8 +10,8 @@ router.use(authMiddleware);
 
 router.get('/', permissionMiddleware('users:read'), controller.getAll);
 router.get('/:id', permissionMiddleware('users:read'), controller.getById);
-router.post('/', permissionMiddleware('users:create'), controller.create);
-router.put('/:id', permissionMiddleware('users:update'), controller.update);
+router.post('/', permissionMiddleware('users:write'), controller.create);
+router.put('/:id', permissionMiddleware('users:write'), controller.update);
 router.delete('/:id', permissionMiddleware('users:delete'), controller.delete);
 router.post('/:id/role', permissionMiddleware('users:assignRole'), controller.assignRole);
 
