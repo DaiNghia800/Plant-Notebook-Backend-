@@ -1,7 +1,46 @@
 const { LibraryPlant } = require('../../models');
 const { libraryPlantSeedData } = require('../../seeds/library_plant.seed');
+const { Op } = require('sequelize');
 
 class LibraryPlantAdminService {
+  async getPlants(query) {
+    const { page = 1, limit = 10, search, category, approvalStatus } = query;
+    const offset = (page - 1) * limit;
+
+    const where = {};
+    if (search) {
+      where.name = { [Op.iLike]: `%${search}%` };
+    }
+    if (category) {
+      where.category = category;
+    }
+    if (approvalStatus) {
+      where.approvalStatus = approvalStatus;
+    }
+
+    const { count, rows } = await LibraryPlant.findAndCountAll({
+      where,
+      limit: parseInt(limit, 10),
+      offset: parseInt(offset, 10),
+      order: [['createdAt', 'DESC']]
+    });
+
+    return {
+      totalItems: count,
+      plants: rows,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page, 10)
+    };
+  }
+
+  async getPlantById(id) {
+    const plant = await LibraryPlant.findByPk(id);
+    if (!plant) {
+      throw new Error('Plant not found');
+    }
+    return plant;
+  }
+
   async createPlant(data) {
     return await LibraryPlant.create({ ...data, approvalStatus: 'approved' }); // Admin tạo trực tiếp là approved
   }
