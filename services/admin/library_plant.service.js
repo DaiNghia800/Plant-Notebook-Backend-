@@ -14,7 +14,10 @@ class LibraryPlantAdminService {
     if (category) {
       where.category = category;
     }
-    if (approvalStatus) {
+    if (approvalStatus === 'history') {
+      where.approvalStatus = { [Op.in]: ['approved', 'rejected'] };
+      where.contributorId = { [Op.ne]: null };
+    } else if (approvalStatus) {
       where.approvalStatus = approvalStatus;
     }
 
@@ -25,18 +28,57 @@ class LibraryPlantAdminService {
       order: [['createdAt', 'DESC']]
     });
 
+    const { db: firestoreDb } = require('../../config/firebase');
+    const resolvedPlants = [];
+    for (const row of rows) {
+      const plant = row.toJSON();
+      if (plant.contributorId) {
+        try {
+          const userDoc = await firestoreDb.collection('users').doc(plant.contributorId).get();
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            plant.contributor = {
+              id: plant.contributorId,
+              fullName: userData.fullName || userData.name || 'Người dùng',
+              email: userData.email || ''
+            };
+          }
+        } catch (err) {
+          console.error(`Failed to fetch contributor ${plant.contributorId} from Firestore:`, err.message);
+        }
+      }
+      resolvedPlants.push(plant);
+    }
+
     return {
       totalItems: count,
-      plants: rows,
+      plants: resolvedPlants,
       totalPages: Math.ceil(count / limit),
       currentPage: parseInt(page, 10)
     };
   }
 
   async getPlantById(id) {
-    const plant = await LibraryPlant.findByPk(id);
-    if (!plant) {
+    const plantRecord = await LibraryPlant.findByPk(id);
+    if (!plantRecord) {
       throw new Error('Plant not found');
+    }
+    const plant = plantRecord.toJSON();
+    if (plant.contributorId) {
+      try {
+        const { db: firestoreDb } = require('../../config/firebase');
+        const userDoc = await firestoreDb.collection('users').doc(plant.contributorId).get();
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          plant.contributor = {
+            id: plant.contributorId,
+            fullName: userData.fullName || userData.name || 'Người dùng',
+            email: userData.email || ''
+          };
+        }
+      } catch (err) {
+        console.error(`Failed to fetch contributor ${plant.contributorId} from Firestore:`, err.message);
+      }
     }
     return plant;
   }
@@ -50,6 +92,37 @@ class LibraryPlantAdminService {
     if (!plant) {
       throw new Error('Plant not found');
     }
+
+    // Check if another plant with the same name or scientificName is already approved
+    const { Op } = require('sequelize');
+    const conditions = [];
+    if (plant.scientificName && 
+        plant.scientificName.trim().toLowerCase() !== 'khong ro' && 
+        plant.scientificName.trim().toLowerCase() !== 'không rõ' &&
+        plant.scientificName.trim().toLowerCase() !== 'khongro') {
+      conditions.push({
+        scientificName: { [Op.iLike]: plant.scientificName.trim() }
+      });
+    }
+    if (plant.name) {
+      conditions.push({
+        name: { [Op.iLike]: plant.name.trim() }
+      });
+    }
+
+    if (conditions.length > 0) {
+      const existing = await LibraryPlant.findOne({
+        where: {
+          id: { [Op.ne]: id },
+          approvalStatus: 'approved',
+          [Op.or]: conditions
+        }
+      });
+      if (existing) {
+        throw new Error(`Cây này đã tồn tại trong thư viện chính thức dưới tên "${existing.name}".`);
+      }
+    }
+
     return await plant.update({ approvalStatus: 'approved' });
   }
 
