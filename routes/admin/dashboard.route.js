@@ -8,6 +8,7 @@ const controller = require('../../controllers/admin/dashboard.controller');
 // All dashboard routes require admin auth
 router.use(authMiddleware);
 
+router.get('/', permissionMiddleware('dashboard:read'), controller.getDashboardSummary);
 router.get('/summary', permissionMiddleware('dashboard:read'), controller.summary);
 router.get('/timeseries', permissionMiddleware('dashboard:read'), controller.timeseries);
 

@@ -6,7 +6,7 @@ const usersRoute = require("./users.route");
 const dashboardRoute = require("./dashboard.route");
 const logsRoute = require("./logs.route");
 const adminRateLimiter = require("../../middlewares/adminRateLimiter");
-const auditMiddleware = require("../../middlewares/admin/audit.middleware");
+const auditMiddleware = require("../../middlewares/audit.middleware");
 const systemConfig = require("../../config/system");
 
 module.exports = (app) => {

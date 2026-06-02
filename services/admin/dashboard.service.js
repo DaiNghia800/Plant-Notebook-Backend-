@@ -8,12 +8,12 @@ const { Op } = require('sequelize');
 module.exports = {
   /** Summary counts */
   async getSummary() {
-    const [users, plants, gardenPlants] = await Promise.all([
+    const [totalUsers, totalPlants, totalGardenPlants] = await Promise.all([
       db.User.count(),
       db.Plant.count(),
       db.GardenPlant.count()
     ]);
-    return { users, plants, gardenPlants };
+    return { totalUsers, totalPlants, totalGardenPlants };
   },
 
   /** Time‑series: new users per day for last 30 days */

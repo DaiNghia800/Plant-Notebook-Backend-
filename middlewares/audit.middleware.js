@@ -1,5 +1,5 @@
 'use strict';
-const logger = require('../../utils/logger');
+const logger = require('../utils/logger');
 
 /**
  * Audit middleware – logs every non-GET request performed by an admin.
