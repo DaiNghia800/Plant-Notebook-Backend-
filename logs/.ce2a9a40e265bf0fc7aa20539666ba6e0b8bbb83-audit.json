@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "E:\\UTC_2\\LT_API\\Plant-Notebook-Backend\\Plant-Notebook-Backend-\\logs\\.ce2a9a40e265bf0fc7aa20539666ba6e0b8bbb83-audit.json",
+    "files": [
+        {
+            "date": 1780390163857,
+            "name": "E:\\UTC_2\\LT_API\\Plant-Notebook-Backend\\Plant-Notebook-Backend-\\logs\\error-2026-06-02.log",
+            "hash": "8fe9bb1d862fb9b0072791d5880c9b26008797d269a8396ee17fb26faf2282ad"
+        }
+    ],
+    "hashType": "sha256"
+}

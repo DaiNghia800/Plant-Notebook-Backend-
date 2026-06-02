@@ -1,5 +1,6 @@
 node_modules/
 .env
+.env.example
 config/serviceAccountKey.json
 seed.js
 config/seeder.js

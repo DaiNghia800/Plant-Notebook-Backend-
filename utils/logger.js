@@ -1,10 +1,13 @@
 'use strict';
 const winston = require('winston');
 require('winston-daily-rotate-file');
-
-// Define log directory (create if not existent)
 const path = require('path');
 const logDir = path.resolve(__dirname, '..', 'logs');
+const fs = require('fs');
+// Ensure log directory exists
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
 
 // Transport for combined log (info and above)
 const combinedTransport = new winston.transports.DailyRotateFile({
@@ -13,7 +16,11 @@ const combinedTransport = new winston.transports.DailyRotateFile({
   zippedArchive: true,
   maxSize: '20m',
   maxFiles: '14d',
-  level: 'info'
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.json()
+  ),
 });
 
 // Transport for error log (error level only)
@@ -23,14 +30,14 @@ const errorTransport = new winston.transports.DailyRotateFile({
   zippedArchive: true,
   maxSize: '20m',
   maxFiles: '30d',
-  level: 'error'
+  level: 'error',
+  format: winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.json()
+  ),
 });
 
 const logger = winston.createLogger({
-  format: winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
-  ),
   transports: [combinedTransport, errorTransport]
 });
 
@@ -41,5 +48,4 @@ logger.stream = {
     logger.info(message.trim());
   }
 };
-
 module.exports = logger;

@@ -6,6 +6,7 @@ const usersRoute = require("./users.route");
 const dashboardRoute = require("./dashboard.route");
 const logsRoute = require("./logs.route");
 const adminRateLimiter = require("../../middlewares/adminRateLimiter");
+const auditMiddleware = require("../../middlewares/admin/audit.middleware");
 const systemConfig = require("../../config/system");
 
 module.exports = (app) => {
@@ -13,6 +14,8 @@ module.exports = (app) => {
 
   // Global admin rate limiter
   app.use(PATH_ADMIN, adminRateLimiter);
+  // Audit every non‑GET admin action after auth (auth is inside each sub‑router)
+  app.use(PATH_ADMIN, auditMiddleware);
 
   app.use(`${PATH_ADMIN}/auth`, authRoute);
   app.use(`${PATH_ADMIN}/library-plants`, libraryPlantRoute);
