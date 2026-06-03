@@ -16,7 +16,7 @@ INSERT INTO "Categories" ("id", "name", "createdAt", "updatedAt")
 VALUES 
 (gen_random_uuid(), 'Trong nhà', NOW(), NOW()),
 (gen_random_uuid(), 'Ban công', NOW(), NOW()),
-(gen_random_uuid(), 'Sân vườn', NOW(), NOW());
+(gen_random_uuid(), 'Ngoài trời', NOW(), NOW());
 
 -- 3. Thêm cây vào "Khu vườn của tôi" (GardenPlants)
 -- LƯU Ý: Thay 'ID_USER_O_TREN' và 'ID_PLANT_O_TREN' bằng mã UUID thực tế vừa tạo ra
