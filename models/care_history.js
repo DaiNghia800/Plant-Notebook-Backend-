@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       allowNull: false
     },
-    gardenPlantId: DataTypes.STRING,
+    gardenPlantId: DataTypes.UUID,
     actionType: DataTypes.STRING,       
     performedAt: DataTypes.DATE, 
   }, {

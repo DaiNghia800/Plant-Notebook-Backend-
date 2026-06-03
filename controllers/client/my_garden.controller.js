@@ -347,6 +347,13 @@ module.exports.createCareHistory = async (req, res) => {
       await reminder.save();
     }
 
+    if (actionType === 'Tưới nước') {
+      if (gardenPlant.status === 'Đang khát' || gardenPlant.status === 'thirsty') {
+        gardenPlant.status = 'Khỏe mạnh';
+        await gardenPlant.save();
+      }
+    }
+
     return res.status(201).json({ success: true, data: careAction });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

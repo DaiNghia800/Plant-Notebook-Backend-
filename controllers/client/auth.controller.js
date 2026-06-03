@@ -277,7 +277,7 @@ exports.forgotPassword = async (req, res) => {
     try {
       const user = await User.findOne({ where: { email } });
       if (user) userExists = true;
-    } catch (err) {}
+    } catch (err) { }
 
     if (!userExists) {
       const snapshot = await db.collection("users").where("email", "==", email).limit(1).get();
@@ -345,11 +345,11 @@ exports.resetPassword = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
+
     // Cập nhật SQL
     try {
       await User.update({ password: hashedPassword }, { where: { email } });
-    } catch (err) {}
+    } catch (err) { }
 
     // Cập nhật Firestore
     const snapshot = await db.collection("users").where("email", "==", email).limit(1).get();

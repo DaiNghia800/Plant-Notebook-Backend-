@@ -15,15 +15,43 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init({
     id: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       defaultValue: DataTypes.UUIDV4, 
       primaryKey: true,
       allowNull: false
     },
-    fullName: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    fcmToken: DataTypes.STRING
+    fullName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+      },
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    authProvider: {
+      type: DataTypes.STRING,
+      defaultValue: "local",
+    },
+    fcmToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   }, {
     sequelize,
     modelName: 'User',
