@@ -11,7 +11,7 @@ const runSeeder = async () => {
     console.log("=== BẮT ĐẦU ĐỒNG BỘ VÀ NẠP DỮ LIỆU DB ===");
     
     // Đồng bộ database trước
-    await db.sequelize.sync({ force: false });
+    await db.sequelize.sync({ force: true });
     console.log("Đã đồng bộ cấu trúc bảng thành công.");
 
     // Dọn dẹp dữ liệu cũ (Xóa theo thứ tự ràng buộc khóa ngoại)
