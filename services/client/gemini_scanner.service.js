@@ -10,7 +10,29 @@ class GeminiScannerService {
       'Nhan dien va phan tich cay trong anh nay.\n' +
       'Neu khong chac chan ve loai cay, hay ghi ten pho thong la "Chua xac dinh duoc loai cay" va ten khoa hoc la "Khong ro".\n' +
       'Tra ve JSON (KHONG markdown, KHONG text ngoai JSON):\n' +
-      '{"ten_pho_thong":"<ten tieng Viet>","ten_khoa_hoc":"<Ten Latin>","tinh_trang_suc_khoe":"<Tot|Kha tot|Trung binh|Dang yeu|Dang mac benh>","benh_dang_gap":"<ten benh + nguyen nhan ngan, hoac Khong phat hien benh>","loi_khuyen_cham_soc":"<2-3 cau cu the: nuoc, anh sang, dat, phan bon>","ban_co_biet":"Ban co biet... <1-2 cau thu vi ve cay nay>"}\n' +
+      '{\n' +
+      '  "ten_pho_thong": "<ten tieng Viet>",\n' +
+      '  "ten_khoa_hoc": "<Ten Latin>",\n' +
+      '  "category": "<Trong nhà|Ngoài trời|Ban công>",\n' +
+      '  "tinh_trang_suc_khoe": "<Tot|Kha tot|Trung binh|Dang yeu|Dang mac benh>",\n' +
+      '  "benh_dang_gap": "<ten benh + nguyen nhan ngan, hoac Khong phat hien benh>",\n' +
+      '  "loi_khuyen_cham_soc": "<2-3 cau cu the: nuoc, anh sang, dat, phan bon>",\n' +
+      '  "ban_co_biet": "Ban co biet... <1-2 cau thu vi ve cay nay>",\n' +
+      '  "shortDescription": "<mo ta rat ngan gon 2-3 cau ve dac diem noi bat cua cay>",\n' +
+      '  "description": "<mo ta chi tiet hon ve dac tinh sinh hoc, cach trong va phan bo cua cay>",\n' +
+      '  "lightLevel": "<It anh sang|Anh sang ban phan|Anh sang truc tiep>",\n' +
+      '  "waterNeed": "<It|Trung binh|Nhieu>",\n' +
+      '  "difficulty": "<De|Trung binh|Kho>",\n' +
+      '  "temperature": "<vd: 18-30°C>",\n' +
+      '  "humidity": "<vd: 50-70%>",\n' +
+      '  "toxicity": "<vd: Khong doc hoặc Doc nhe voi thu cung>",\n' +
+      '  "careGuide": ["<Buoc 1 ve tuoi nuoc: ...>", "<Buoc 2 ve anh sang: ...>", "<Buoc 3 ve dat va phan bon: ...>"],\n' +
+      '  "funFacts": ["<Su that thu vi 1>", "<Su that thu vi 2>"],\n' +
+      '  "growthTimeline": [\n' +
+      '    {"monthLabel": "Cay non (1-3 thang)", "note": "<ghi chu cham soc cay non>"},\n' +
+      '    {"monthLabel": "Truong thanh", "note": "<ghi chu cham soc cay truong thanh>"}\n' +
+      '  ]\n' +
+      '}\n' +
       'TAT CA noi dung PHAI la tieng Viet co dau. KHONG chen bat ky chu nuoc ngoai nao.';
   }
 
@@ -139,7 +161,7 @@ class GeminiScannerService {
       ],
       generationConfig: {
         temperature: 0.2,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 4096,
         responseMimeType: 'application/json'
       }
     };

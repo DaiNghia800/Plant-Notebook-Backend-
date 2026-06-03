@@ -5,6 +5,64 @@ const uploadCloudinary = require('../../middlewares/uploadCloudinary');
 
 /**
  * @swagger
+ * /library-plants:
+ *   get:
+ *     summary: Lấy danh sách cây trong thư viện (có phân trang, Admin)
+ *     tags: [LibraryPlants]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Số trang
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Số lượng cây mỗi trang
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo tên
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Lọc theo danh mục
+ *       - in: query
+ *         name: approvalStatus
+ *         schema:
+ *           type: string
+ *         description: Lọc theo trạng thái duyệt (approved/pending/rejected)
+ *     responses:
+ *       200:
+ *         description: Trả về danh sách cây
+ */
+router.get('/', controller.getPlants);
+
+/**
+ * @swagger
+ * /library-plants/{id}:
+ *   get:
+ *     summary: Lấy chi tiết cây (Admin)
+ *     tags: [LibraryPlants]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Trả về thông tin cây
+ *       404:
+ *         description: Không tìm thấy cây
+ */
+router.get('/:id', controller.getPlantById);
+
+/**
+ * @swagger
  * /library-plants/seed:
  *   post:
  *     summary: Khởi tạo/nạp dữ liệu mẫu 40 cây vào PostgreSQL (Admin)
