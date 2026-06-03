@@ -11,5 +11,6 @@ router.use(authMiddleware);
 router.get('/', permissionMiddleware('dashboard:read'), controller.getDashboardSummary);
 router.get('/summary', permissionMiddleware('dashboard:read'), controller.summary);
 router.get('/timeseries', permissionMiddleware('dashboard:read'), controller.timeseries);
+router.get('/analytics', permissionMiddleware('dashboard:read'), controller.analytics);
 
 module.exports = router;

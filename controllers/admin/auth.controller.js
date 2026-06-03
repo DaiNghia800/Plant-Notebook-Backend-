@@ -18,8 +18,15 @@ module.exports.login = async (req, res) => {
         sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000 // Hết hạn sau 1 ngày
       });
-      // Xóa token khỏi body trả về để bảo mật tuyệt đối
-      delete response.token;
+      // Định dạng lại response theo chuẩn có data: { token, user } để frontend sử dụng
+      return res.status(200).json({
+        err: 0,
+        data: {
+          token: response.token,
+          user: response.user
+        },
+        msg: response.msg
+      });
     }
     return res.status(200).json(response)
   } catch (error) {

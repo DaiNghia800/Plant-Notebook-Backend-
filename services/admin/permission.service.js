@@ -11,6 +11,10 @@ module.exports = {
       include: [{ model: db.Permission, as: 'permissions' }]
     });
     if (!role) return false;
+    
+    // Bypass permission check for Super Admin
+    if (role.name === 'Super Admin' || role.name === 'Admin') return true;
+
     return role.permissions.some(p => `${p.resource}:${p.action}` === required);
   }
 };

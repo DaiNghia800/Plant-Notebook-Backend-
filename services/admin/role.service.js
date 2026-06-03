@@ -42,6 +42,12 @@ module.exports = {
     if (!role) return null;
 
     const { name, description, permissionIds } = data;
+    
+    // Bảo vệ không cho phép đổi tên hoặc sửa Role Super Admin gốc
+    if (role.name === 'Super Admin' && name && name !== 'Super Admin') {
+      throw new Error('Không thể đổi tên của Super Admin');
+    }
+
     await role.update({ name, description });
 
     // Overwrite permissions in the junction table

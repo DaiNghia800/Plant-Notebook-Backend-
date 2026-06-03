@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Dashboard controller exposing summary and time‑series endpoints.
+ * Dashboard controller exposing summary, time-series, and analytics endpoints.
  */
 const dashboardService = require('../../services/admin/dashboard.service');
 
@@ -31,11 +31,34 @@ module.exports = {
   async timeseries(req, res) {
     try {
       const days = parseInt(req.query.days, 10) || 30;
-      const data = await dashboardService.getUserTimeseries(days);
-      return res.status(200).json({ err: 0, data });
+      const [userTimeseries, gardenPlantTimeseries] = await Promise.all([
+        dashboardService.getUserTimeseries(days),
+        dashboardService.getGardenPlantTimeseries(days),
+      ]);
+      return res.status(200).json({ err: 0, data: { userTimeseries, gardenPlantTimeseries } });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ err: -1, msg: 'Failed to fetch dashboard timeseries' });
+    }
+  },
+
+  // GET /admin/dashboard/analytics
+  async analytics(req, res) {
+    try {
+      const [plantsByCategory, plantsByStatus, storesByType, careByType, recentUsers] = await Promise.all([
+        dashboardService.getPlantsByCategory(),
+        dashboardService.getPlantsByStatus(),
+        dashboardService.getStoresByType(),
+        dashboardService.getCareByType(),
+        dashboardService.getRecentUsers(),
+      ]);
+      return res.status(200).json({
+        err: 0,
+        data: { plantsByCategory, plantsByStatus, storesByType, careByType, recentUsers }
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ err: -1, msg: 'Failed to fetch analytics' });
     }
   }
 };
