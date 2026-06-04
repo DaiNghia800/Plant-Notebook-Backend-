@@ -52,6 +52,14 @@ module.exports = (sequelize, DataTypes) => {
     fcmToken: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    role: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    roleId: {
+      type: DataTypes.UUID,
+      allowNull: true,
     }
   }, {
     sequelize,
