@@ -3,23 +3,26 @@ const bcrypt = require("bcrypt");
 const { sequelize } = require("./config/database");
 
 // Import models
-const User = require("./models/user.model");
-const LibraryPlant = require("./models/libraryPlant.model");
-const MyGarden = require("./models/myGarden.model");
+const db = require("./models");
+const { User, LibraryPlant, GardenPlant, Plant, Category, Reminder, CareHistory } = db;
 
 const runSeeder = async () => {
   try {
     console.log("=== BẮT ĐẦU ĐỒNG BỘ VÀ NẠP DỮ LIỆU DB ===");
     
     // Đồng bộ database trước
-    await sequelize.sync({ force: false });
+    await db.sequelize.sync({ force: true });
     console.log("Đã đồng bộ cấu trúc bảng thành công.");
 
     // Dọn dẹp dữ liệu cũ (Xóa theo thứ tự ràng buộc khóa ngoại)
-    await MyGarden.destroy({ where: {} });
+    await Reminder.destroy({ where: {} });
+    await CareHistory.destroy({ where: {} });
+    await GardenPlant.destroy({ where: {} });
+    await Plant.destroy({ where: {} });
+    await Category.destroy({ where: {} });
     await User.destroy({ where: {} });
     await LibraryPlant.destroy({ where: {} });
-    console.log("Đã xóa sạch dữ liệu cũ trong các bảng MyGarden, User, LibraryPlant.");
+    console.log("Đã xóa sạch dữ liệu cũ trong các bảng.");
 
     // 1. TẠO NGƯỜI DÙNG MẪU (3 Users)
     const saltRounds = 10;
@@ -27,25 +30,19 @@ const runSeeder = async () => {
 
     const usersData = [
       {
-        name: "Nguyễn Văn An",
+        fullName: "Nguyễn Văn An",
         email: "an.nguyen@gmail.com",
         password: hashedPassword,
-        avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=An",
-        authProvider: "local",
       },
       {
-        name: "Trần Thị Bình",
+        fullName: "Trần Thị Bình",
         email: "binh.tran@gmail.com",
         password: hashedPassword,
-        avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=Binh",
-        authProvider: "local",
       },
       {
-        name: "Lê Minh Cường",
+        fullName: "Lê Minh Cường",
         email: "cuong.le@gmail.com",
         password: hashedPassword,
-        avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=Cuong",
-        authProvider: "local",
       },
     ];
 
@@ -76,9 +73,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "15°C - 30°C",
+        temperature: "15°C - 30°C",
         badge: "Phổ biến",
-        humidityLevel: "Trung bình đến cao (50% - 70%)",
+        humidity: "Trung bình đến cao (50% - 70%)",
         toxicity: "Độc hại nhẹ đối với chó, mèo nếu nhai phải do chứa tinh thể canxi oxalat.",
         wateringIntervalDays: 4,
         wateringFrequencyLabel: "2 lần/tuần",
@@ -105,9 +102,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1593487568522-746db8894941?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "18°C - 35°C",
+        temperature: "18°C - 35°C",
         badge: "Phong thủy",
-        humidityLevel: "Thấp đến trung bình (30% - 50%)",
+        humidity: "Thấp đến trung bình (30% - 50%)",
         toxicity: "Độc hại nhẹ đối với thú cưng do chứa saponin gây kích ứng tiêu hóa.",
         wateringIntervalDays: 10,
         wateringFrequencyLabel: "1 lần/10 ngày",
@@ -134,9 +131,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1632207691143-643e2a9a9361?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "18°C - 32°C",
+        temperature: "18°C - 32°C",
         badge: "Hút tài lộc",
-        humidityLevel: "Trung bình (40% - 60%)",
+        humidity: "Trung bình (40% - 60%)",
         toxicity: "Tất cả các bộ phận của cây đều có độc vì chứa canxi oxalat, tránh xa tầm tay trẻ em.",
         wateringIntervalDays: 7,
         wateringFrequencyLabel: "1 lần/tuần",
@@ -163,9 +160,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "16°C - 30°C",
+        temperature: "16°C - 30°C",
         badge: "May mắn",
-        humidityLevel: "Cao (60% - 80%)",
+        humidity: "Cao (60% - 80%)",
         toxicity: "Hoàn toàn an toàn cho người và các loài thú nuôi trong nhà.",
         wateringIntervalDays: 6,
         wateringFrequencyLabel: "1-2 lần/tuần",
@@ -192,9 +189,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1598880940080-ff9a29891b85?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "16°C - 28°C",
+        temperature: "16°C - 28°C",
         badge: "Thanh lọc khí",
-        humidityLevel: "Cao (60% - 80%)",
+        humidity: "Cao (60% - 80%)",
         toxicity: "Chứa tinh thể canxi oxalat gây kích ứng mạnh vùng miệng nếu vô tình nhai phải.",
         wateringIntervalDays: 3,
         wateringFrequencyLabel: "2-3 lần/tuần",
@@ -221,9 +218,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1597055181300-e3633a207518?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "18°C - 27°C",
+        temperature: "18°C - 27°C",
         badge: "Nội thất cao cấp",
-        humidityLevel: "Trung bình đến cao (50% - 75%)",
+        humidity: "Trung bình đến cao (50% - 75%)",
         toxicity: "Nhựa mủ trắng của cây gây kích ứng nhẹ ngoài da và đường ruột.",
         wateringIntervalDays: 5,
         wateringFrequencyLabel: "1-2 lần/tuần",
@@ -250,9 +247,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "15°C - 35°C",
+        temperature: "15°C - 35°C",
         badge: "Thảo dược",
-        humidityLevel: "Thấp (30% - 40%)",
+        humidity: "Thấp (30% - 40%)",
         toxicity: "Vỏ lá có thể gây tiêu chảy cho thú cưng nếu nhai phải lượng lớn.",
         wateringIntervalDays: 12,
         wateringFrequencyLabel: "1 lần/2 tuần",
@@ -279,9 +276,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1599880940080-ff9a29891b85?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "13°C - 27°C",
+        temperature: "13°C - 27°C",
         badge: "An toàn cho pet",
-        humidityLevel: "Trung bình (50% - 60%)",
+        humidity: "Trung bình (50% - 60%)",
         toxicity: "Hoàn toàn không độc hại, rất an toàn đối với các loài động vật.",
         wateringIntervalDays: 4,
         wateringFrequencyLabel: "2 lần/tuần",
@@ -308,9 +305,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1520302630591-fd1c66ed11db?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "10°C - 28°C",
+        temperature: "10°C - 28°C",
         badge: "Được yêu thích",
-        humidityLevel: "Rất thấp (20% - 40%)",
+        humidity: "Rất thấp (20% - 40%)",
         toxicity: "Không độc hại cho con người cũng như vật nuôi.",
         wateringIntervalDays: 9,
         wateringFrequencyLabel: "1 lần/tuần",
@@ -337,9 +334,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1508847154043-be12a62861c1?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "15°C - 40°C",
+        temperature: "15°C - 40°C",
         badge: "Dễ trồng",
-        humidityLevel: "Rất thấp (15% - 30%)",
+        humidity: "Rất thấp (15% - 30%)",
         toxicity: "Gai mịn gây tổn thương cơ học nhẹ nếu nuốt phải, cần để xa tầm tay trẻ nhỏ.",
         wateringIntervalDays: 14,
         wateringFrequencyLabel: "1 lần/2 tuần",
@@ -366,9 +363,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "15°C - 30°C",
+        temperature: "15°C - 30°C",
         badge: "Đuổi muỗi",
-        humidityLevel: "Trung bình đến cao (50% - 70%)",
+        humidity: "Trung bình đến cao (50% - 70%)",
         toxicity: "Độc hại nhẹ đối với vật nuôi do chứa canxi oxalat gây rát lưỡi và khoang miệng.",
         wateringIntervalDays: 5,
         wateringFrequencyLabel: "1-2 lần/tuần",
@@ -395,9 +392,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "18°C - 28°C",
+        temperature: "18°C - 28°C",
         badge: "Gia đình",
-        humidityLevel: "Trung bình (50% - 60%)",
+        humidity: "Trung bình (50% - 60%)",
         toxicity: "Hoàn toàn thân thiện và an toàn đối với các loài thú cưng.",
         wateringIntervalDays: 5,
         wateringFrequencyLabel: "2 lần/tuần",
@@ -424,9 +421,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "16°C - 30°C",
+        temperature: "16°C - 30°C",
         badge: "Tình yêu",
-        humidityLevel: "Cao (60% - 80%)",
+        humidity: "Cao (60% - 80%)",
         toxicity: "Chứa các tinh thể canxi oxalat có thể gây kích ứng niêm mạc lưỡi và miệng nếu nuốt phải.",
         wateringIntervalDays: 4,
         wateringFrequencyLabel: "2 lần/tuần",
@@ -453,9 +450,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "16°C - 29°C",
+        temperature: "16°C - 29°C",
         badge: "Đỏ may mắn",
-        humidityLevel: "Trung bình đến cao (55% - 75%)",
+        humidity: "Trung bình đến cao (55% - 75%)",
         toxicity: "Độc hại nhẹ cho chó và mèo do chứa chất canxi oxalat.",
         wateringIntervalDays: 5,
         wateringFrequencyLabel: "1-2 lần/tuần",
@@ -482,9 +479,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "16°C - 30°C",
+        temperature: "16°C - 30°C",
         badge: "Tài lộc",
-        humidityLevel: "Trung bình đến cao (50% - 70%)",
+        humidity: "Trung bình đến cao (50% - 70%)",
         toxicity: "Độc nhẹ cho vật nuôi nếu nuốt phải, cần chú ý khu vực đặt chậu cây.",
         wateringIntervalDays: 5,
         wateringFrequencyLabel: "1-2 lần/tuần",
@@ -511,9 +508,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1599880940080-ff9a29891b85?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "15°C - 28°C",
+        temperature: "15°C - 28°C",
         badge: "Ưa ẩm",
-        humidityLevel: "Rất cao (70% - 90%)",
+        humidity: "Rất cao (70% - 90%)",
         toxicity: "Hoàn toàn không có độc, vô cùng thân thiện với trẻ nhỏ và thú nuôi.",
         wateringIntervalDays: 2,
         wateringFrequencyLabel: "3-4 lần/tuần",
@@ -540,9 +537,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "16°C - 30°C",
+        temperature: "16°C - 30°C",
         badge: "Hòa hợp",
-        humidityLevel: "Trung bình (50% - 65%)",
+        humidity: "Trung bình (50% - 65%)",
         toxicity: "Độc hại nhẹ đối với chó, mèo nếu vô tình nhai lá cây.",
         wateringIntervalDays: 6,
         wateringFrequencyLabel: "1-2 lần/tuần",
@@ -569,9 +566,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "15°C - 28°C",
+        temperature: "15°C - 28°C",
         badge: "Thủy sinh dễ trồng",
-        humidityLevel: "Cao (60% - 75%)",
+        humidity: "Cao (60% - 75%)",
         toxicity: "Chất saponin chứa trong thân cây độc nhẹ đối với đường tiêu hóa vật nuôi.",
         wateringIntervalDays: 3,
         wateringFrequencyLabel: "2 lần/tuần (hoặc thay nước tuần/lần)",
@@ -598,9 +595,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "16°C - 30°C",
+        temperature: "16°C - 30°C",
         badge: "Được ưa chuộng",
-        humidityLevel: "Cao (60% - 80%)",
+        humidity: "Cao (60% - 80%)",
         toxicity: "Độc hại nhẹ cho thú cưng do chứa tinh thể canxi oxalat bám dính khoang miệng.",
         wateringIntervalDays: 4,
         wateringFrequencyLabel: "2 lần/tuần",
@@ -627,9 +624,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1597055181300-e3633a207518?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "15°C - 32°C",
+        temperature: "15°C - 32°C",
         badge: "Tán lá to",
-        humidityLevel: "Cao (60% - 80%)",
+        humidity: "Cao (60% - 80%)",
         toxicity: "Chất canxi oxalat trong nhựa có độc tính nhẹ gây rát và ngứa nhẹ ngoài da hoặc khoang miệng.",
         wateringIntervalDays: 5,
         wateringFrequencyLabel: "1-2 lần/tuần",
@@ -656,9 +653,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: true,
-        temperatureRange: "18°C - 30°C",
+        temperature: "18°C - 30°C",
         badge: "Được săn đón",
-        humidityLevel: "Cao (60% - 85%)",
+        humidity: "Cao (60% - 85%)",
         toxicity: "Nhựa cây có chứa canxi oxalat bám dính khoang miệng, độc hại nhẹ với chó mèo.",
         wateringIntervalDays: 6,
         wateringFrequencyLabel: "1 lần/tuần",
@@ -685,9 +682,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "16°C - 35°C",
+        temperature: "16°C - 35°C",
         badge: "Văn phòng",
-        humidityLevel: "Trung bình (40% - 60%)",
+        humidity: "Trung bình (40% - 60%)",
         toxicity: "Độc hại nhẹ cho chó mèo do chứa hàm lượng nhỏ chất saponin đường ruột.",
         wateringIntervalDays: 8,
         wateringFrequencyLabel: "1 lần/tuần",
@@ -714,9 +711,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "18°C - 30°C",
+        temperature: "18°C - 30°C",
         badge: "Để bàn học",
-        humidityLevel: "Trung bình đến cao (55% - 75%)",
+        humidity: "Trung bình đến cao (55% - 75%)",
         toxicity: "Hoàn toàn lành tính, an toàn tuyệt đối với trẻ nhỏ và mọi loài thú nuôi.",
         wateringIntervalDays: 4,
         wateringFrequencyLabel: "2 lần/tuần",
@@ -743,9 +740,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1597055181300-e3633a207518?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "16°C - 29°C",
+        temperature: "16°C - 29°C",
         badge: "Đậm cá tính",
-        humidityLevel: "Trung bình (50% - 60%)",
+        humidity: "Trung bình (50% - 60%)",
         toxicity: "Nhựa mủ trắng đục của cây chứa chất kích ứng mạnh ngoài da người hoặc niêm mạc động vật.",
         wateringIntervalDays: 5,
         wateringFrequencyLabel: "1-2 lần/tuần",
@@ -772,9 +769,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1599880940080-ff9a29891b85?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "10°C - 25°C",
+        temperature: "10°C - 25°C",
         badge: "Leo rủ mềm mại",
-        humidityLevel: "Cao (60% - 80%)",
+        humidity: "Cao (60% - 80%)",
         toxicity: "Lá cây có chứa chất saponin độc hại nhẹ đối với chó mèo khi nuốt phải.",
         wateringIntervalDays: 4,
         wateringFrequencyLabel: "2 lần/tuần",
@@ -801,9 +798,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: true,
-        temperatureRange: "18°C - 26°C",
+        temperature: "18°C - 26°C",
         badge: "Quý tộc tinh tế",
-        humidityLevel: "Rất cao (65% - 85%)",
+        humidity: "Rất cao (65% - 85%)",
         toxicity: "Hoàn toàn lành tính, an toàn tuyệt đối với vật nuôi và trẻ nhỏ nghịch ngợm.",
         wateringIntervalDays: 3,
         wateringFrequencyLabel: "2-3 lần/tuần",
@@ -830,9 +827,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1520302630591-fd1c66ed11db?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "16°C - 26°C",
+        temperature: "16°C - 26°C",
         badge: "Đáng yêu",
-        humidityLevel: "Rất cao (65% - 85%)",
+        humidity: "Rất cao (65% - 85%)",
         toxicity: "Hoàn toàn lành tính và an toàn với các loài động vật chó mèo.",
         wateringIntervalDays: 2,
         wateringFrequencyLabel: "3-4 lần/tuần",
@@ -859,9 +856,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1508847154043-be12a62861c1?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: false,
-        temperatureRange: "15°C - 30°C",
+        temperature: "15°C - 30°C",
         badge: "Gia vị & Trị liệu",
-        humidityLevel: "Thấp đến trung bình (35% - 50%)",
+        humidity: "Thấp đến trung bình (35% - 50%)",
         toxicity: "Hoàn toàn không độc hại, ăn uống gia vị lành tính tốt cho sức khỏe con người.",
         wateringIntervalDays: 4,
         wateringFrequencyLabel: "2 lần/tuần",
@@ -888,9 +885,9 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=600",
         isTrending: false,
         isRare: false,
-        temperatureRange: "15°C - 30°C",
+        temperature: "15°C - 30°C",
         badge: "Bonsai quý phái",
-        humidityLevel: "Trung bình (45% - 60%)",
+        humidity: "Trung bình (45% - 60%)",
         toxicity: "Không độc hại cho con người, vô cùng thân thiện mát mắt.",
         wateringIntervalDays: 5,
         wateringFrequencyLabel: "1-2 lần/tuần",
@@ -917,20 +914,65 @@ const runSeeder = async () => {
         imageUrl: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80&w=600",
         isTrending: true,
         isRare: true,
-        temperatureRange: "18°C - 28°C",
+        temperature: "18°C - 28°C",
         badge: "Siêu hiếm vô giá",
-        humidityLevel: "Cao (65% - 85%)",
+        humidity: "Cao (65% - 85%)",
         toxicity: "Độc hại nhẹ với vật nuôi tương tự dòng Monstera nguyên bản.",
         wateringIntervalDays: 6,
         wateringFrequencyLabel: "1 lần/tuần",
       }
     ];
 
-    const libraryPlants = await LibraryPlant.bulkCreate(libraryPlantsData, { returning: true });
+    const generateSlug = (name) => {
+      return name
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Remove accents
+        .replace(/[^a-z0-9\s-]/g, "")    // Remove special chars
+        .replace(/\s+/g, "-")            // Replace spaces with -
+        .replace(/-+/g, "-")             // Remove consecutive -
+        .trim();
+    };
+
+    const mapCategory = (rawCategory) => {
+      if (!rawCategory) return "Trong nhà";
+      const cat = rawCategory.trim().toLowerCase();
+      if (cat.includes("trong nhà") || cat.includes("dương xỉ") || cat.includes("thủy sinh") || cat.includes("nước") || cat.includes("phong thủy")) {
+        return "Trong nhà";
+      }
+      if (cat.includes("mọng nước") || cat.includes("xương rồng") || cat.includes("sen đá") || cat.includes("ban công")) {
+        return "Ban công";
+      }
+      if (cat.includes("gia vị") || cat.includes("bonsai") || cat.includes("ngoài trời") || cat.includes("sân vườn") || cat.includes("thảo mộc")) {
+        return "Ngoài trời";
+      }
+      return "Trong nhà"; // Mặc định
+    };
+
+    const libraryPlantsDataWithIds = libraryPlantsData.map((plant, index) => ({
+      ...plant,
+      category: mapCategory(plant.category),
+      id: generateSlug(plant.name) || `plant-${index}`,
+    }));
+
+    const libraryPlants = await LibraryPlant.bulkCreate(libraryPlantsDataWithIds, { returning: true });
     console.log(`Đã tạo thành công ${libraryPlants.length} cây mẫu trong thư viện.`);
 
-    // 3. TẠO CÂY TRONG VƯỜN (10 MyGarden items)
-    // Phân phối ngẫu nhiên cho các user đã tạo
+    // 3. TẠO DANH MỤC CÂY
+    const categoriesData = [
+      { name: "Trong nhà" },
+      { name: "Ngoài trời" },
+      { name: "Ban công" },
+    ];
+    const categories = await Category.bulkCreate(categoriesData, { returning: true });
+    console.log(`Đã tạo thành công ${categories.length} danh mục.`);
+
+    const categoryMap = {};
+    categories.forEach(c => {
+      categoryMap[c.name] = c.id;
+    });
+
+    // 4. TẠO CÂY TRONG VƯỜN (10 MyGarden items mapped to GardenPlant, Plant, Reminder)
     const userAn = users[0];
     const userBinh = users[1];
     const userCuong = users[2];
@@ -943,33 +985,7 @@ const runSeeder = async () => {
         healthStatus: "Khỏe mạnh",
         wateringFrequencyLabel: "2 lần/tuần",
         lastWateredLabel: "Vừa xong",
-        careLogs: [
-          {
-            title: "Đã tưới nước",
-            timeLabel: "Hôm nay • 09:30",
-            note: "Tưới đẫm bằng bình phun sương nhẹ mát.",
-            iconCodePoint: 58245,
-            iconFontFamily: "MaterialIcons",
-            iconFontPackage: null,
-            accentColorValue: 4278190080,
-          },
-          {
-            title: "Đã lau lá",
-            timeLabel: "Hôm qua • 15:45",
-            note: "Dùng khăn mềm làm sạch bụi bẩn giúp lá sáng bóng.",
-            iconCodePoint: 57924,
-            iconFontFamily: "MaterialIcons",
-            iconFontPackage: null,
-            accentColorValue: 4280521884,
-          }
-        ],
-        growthTimeline: [
-          {
-            date: "28/05/2026",
-            note: "Nhánh leo bắt đầu vươn dài ra thêm khoảng 5 cm.",
-            imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
-          }
-        ]
+        imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
       },
       {
         userId: userAn.id,
@@ -978,18 +994,7 @@ const runSeeder = async () => {
         healthStatus: "Khỏe mạnh",
         wateringFrequencyLabel: "1 lần/10 ngày",
         lastWateredLabel: "3 ngày trước",
-        careLogs: [
-          {
-            title: "Đã tưới nước",
-            timeLabel: "3 ngày trước • 08:00",
-            note: "Tưới ít nước sát mép chậu tránh thối rễ.",
-            iconCodePoint: 58245,
-            iconFontFamily: "MaterialIcons",
-            iconFontPackage: null,
-            accentColorValue: 4278190080,
-          }
-        ],
-        growthTimeline: []
+        imageUrl: "https://images.unsplash.com/photo-1593487568522-746db8894941?auto=format&fit=crop&q=80&w=600",
       },
       {
         userId: userAn.id,
@@ -998,8 +1003,7 @@ const runSeeder = async () => {
         healthStatus: "Khỏe mạnh",
         wateringFrequencyLabel: "1 lần/tuần",
         lastWateredLabel: "Chưa tưới",
-        careLogs: [],
-        growthTimeline: []
+        imageUrl: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80&w=600",
       },
       {
         userId: userBinh.id,
@@ -1008,18 +1012,7 @@ const runSeeder = async () => {
         healthStatus: "Khỏe mạnh",
         wateringFrequencyLabel: "1 lần/tuần",
         lastWateredLabel: "Vừa xong",
-        careLogs: [
-          {
-            title: "Đã tưới nước",
-            timeLabel: "Hôm nay • 10:15",
-            note: "Tưới nước sạch quanh gốc rễ ấm áp.",
-            iconCodePoint: 58245,
-            iconFontFamily: "MaterialIcons",
-            iconFontPackage: null,
-            accentColorValue: 4278190080,
-          }
-        ],
-        growthTimeline: []
+        imageUrl: "https://images.unsplash.com/photo-1632207691143-643e2a9a9361?auto=format&fit=crop&q=80&w=600",
       },
       {
         userId: userBinh.id,
@@ -1028,24 +1021,7 @@ const runSeeder = async () => {
         healthStatus: "Hơi héo nhẹ",
         wateringFrequencyLabel: "2-3 lần/tuần",
         lastWateredLabel: "5 ngày trước",
-        careLogs: [
-          {
-            title: "Bón phân nhẹ",
-            timeLabel: "Tuần trước • 16:00",
-            note: "Bón phân hữu cơ tan chậm quanh vành chậu.",
-            iconCodePoint: 57924,
-            iconFontFamily: "MaterialIcons",
-            iconFontPackage: null,
-            accentColorValue: 4280521884,
-          }
-        ],
-        growthTimeline: [
-          {
-            date: "15/05/2026",
-            note: "Bông hoa trắng đầu tiên vươn cao hé nở xinh đẹp.",
-            imageUrl: "https://images.unsplash.com/photo-1598880940080-ff9a29891b85?auto=format&fit=crop&q=80&w=600",
-          }
-        ]
+        imageUrl: "https://images.unsplash.com/photo-1598880940080-ff9a29891b85?auto=format&fit=crop&q=80&w=600",
       },
       {
         userId: userBinh.id,
@@ -1054,8 +1030,7 @@ const runSeeder = async () => {
         healthStatus: "Khỏe mạnh",
         wateringFrequencyLabel: "1 lần/tuần",
         lastWateredLabel: "4 ngày trước",
-        careLogs: [],
-        growthTimeline: []
+        imageUrl: "https://images.unsplash.com/photo-1520302630591-fd1c66ed11db?auto=format&fit=crop&q=80&w=600",
       },
       {
         userId: userCuong.id,
@@ -1064,18 +1039,7 @@ const runSeeder = async () => {
         healthStatus: "Khỏe mạnh",
         wateringFrequencyLabel: "1-2 lần/tuần",
         lastWateredLabel: "Hôm qua",
-        careLogs: [
-          {
-            title: "Đã tưới nước",
-            timeLabel: "Hôm qua • 07:30",
-            note: "Tưới đẫm nước mát thoát nước cực tốt.",
-            iconCodePoint: 58245,
-            iconFontFamily: "MaterialIcons",
-            iconFontPackage: null,
-            accentColorValue: 4278190080,
-          }
-        ],
-        growthTimeline: []
+        imageUrl: "https://images.unsplash.com/photo-1597055181300-e3633a207518?auto=format&fit=crop&q=80&w=600",
       },
       {
         userId: userCuong.id,
@@ -1084,27 +1048,7 @@ const runSeeder = async () => {
         healthStatus: "Khỏe mạnh",
         wateringFrequencyLabel: "2 lần/tuần",
         lastWateredLabel: "Vừa xong",
-        careLogs: [
-          {
-            title: "Đã tưới nước",
-            timeLabel: "Hôm nay • 08:30",
-            note: "Tưới ẩm nhẹ nhàng vùng đất gốc rễ.",
-            iconCodePoint: 58245,
-            iconFontFamily: "MaterialIcons",
-            iconFontPackage: null,
-            accentColorValue: 4278190080,
-          },
-          {
-            title: "Cắt tỉa ngọn",
-            timeLabel: "Tuần trước • 14:00",
-            note: "Tỉa bớt cành già để thu hoạch làm trà thơm ngon.",
-            iconCodePoint: 57924,
-            iconFontFamily: "MaterialIcons",
-            iconFontPackage: null,
-            accentColorValue: 4280521884,
-          }
-        ],
-        growthTimeline: []
+        imageUrl: "https://images.unsplash.com/photo-1508847154043-be12a62861c1?auto=format&fit=crop&q=80&w=600",
       },
       {
         userId: userCuong.id,
@@ -1113,24 +1057,7 @@ const runSeeder = async () => {
         healthStatus: "Khỏe mạnh",
         wateringFrequencyLabel: "1 lần/tuần",
         lastWateredLabel: "2 ngày trước",
-        careLogs: [
-          {
-            title: "Đã tưới nước",
-            timeLabel: "2 ngày trước • 10:00",
-            note: "Tưới nước lọc tinh khiết không clo giữ ẩm.",
-            iconCodePoint: 58245,
-            iconFontFamily: "MaterialIcons",
-            iconFontPackage: null,
-            accentColorValue: 4278190080,
-          }
-        ],
-        growthTimeline: [
-          {
-            date: "25/05/2026",
-            note: "Lá đột biến mới mở bung với tỷ lệ nửa trắng loang lổ tuyệt đẹp.",
-            imageUrl: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80&w=600",
-          }
-        ]
+        imageUrl: "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80&w=600",
       },
       {
         userId: userCuong.id,
@@ -1139,13 +1066,67 @@ const runSeeder = async () => {
         healthStatus: "Khỏe mạnh",
         wateringFrequencyLabel: "1 lần/2 tuần",
         lastWateredLabel: "Chưa tưới",
-        careLogs: [],
-        growthTimeline: []
+        imageUrl: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600",
       }
     ];
 
-    const myGardenItems = await MyGarden.bulkCreate(myGardenData, { returning: true });
-    console.log(`Đã tạo thành công ${myGardenItems.length} cây cảnh thực tế trong vườn người dùng.`);
+    const getWateringDays = (label) => {
+      if (!label) return 3;
+      if (label.includes("10 ngày")) return 10;
+      if (label.includes("2 tuần")) return 14;
+      if (label.includes("3 tuần")) return 21;
+      if (label.includes("1,5 tuần")) return 10;
+      if (label.includes("1 lần/tuần") || label.includes("tuần/lần") || label.includes("Thay nước/tuần")) return 7;
+      if (label.includes("1-2 lần")) return 5;
+      if (label.includes("2 lần")) return 3;
+      if (label.includes("2-3 lần")) return 3;
+      if (label.includes("3-4 lần")) return 2;
+      return 3;
+    };
+
+    console.log("=== BẮT ĐẦU TẠO CÂY TRONG VƯỜN THỰC TẾ ===");
+    for (const item of myGardenData) {
+      const libPlant = libraryPlants.find(lp => lp.id === item.libraryPlantId);
+      
+      const plant = await Plant.create({
+        name: item.nickname || (libPlant ? libPlant.name : "Cây cảnh"),
+        description: libPlant ? libPlant.shortDescription : "Cây trồng trong vườn",
+        imageUrl: item.imageUrl || (libPlant ? libPlant.imageUrl : "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=600"),
+      });
+
+      const catName = libPlant ? libPlant.category : "Trong nhà";
+      const categoryId = categoryMap[catName] || categories[0].id;
+
+      const gardenPlant = await GardenPlant.create({
+        userId: item.userId,
+        plantId: plant.id,
+        categoryId: categoryId,
+        status: item.healthStatus === "Khỏe mạnh" ? "healthy" : (item.healthStatus === "Đang bệnh" ? "sick" : "thirsty"),
+        imageUrl: plant.imageUrl,
+        startedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      });
+
+      const wateringDays = getWateringDays(item.wateringFrequencyLabel);
+      const reminders = [
+        {
+          gardenPlantId: gardenPlant.id,
+          type: 'Tưới nước',
+          frequencyDays: wateringDays,
+          lastActionAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+          isPushEnabled: true,
+        },
+        {
+          gardenPlantId: gardenPlant.id,
+          type: 'Bón phân',
+          frequencyDays: 30,
+          lastActionAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+          isPushEnabled: true,
+        }
+      ];
+      await Reminder.bulkCreate(reminders);
+    }
+
+    console.log(`Đã tạo thành công ${myGardenData.length} cây cảnh thực tế trong vườn người dùng.`);
 
     console.log("=== ĐÃ HOÀN THÀNH SEED DỮ LIỆU THÀNH CÔNG! ===");
     process.exit(0);

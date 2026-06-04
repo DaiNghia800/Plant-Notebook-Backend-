@@ -23,6 +23,7 @@ app.use((req, res, next) => {
 });
 
 connectDB();
+
 initReminderJob();
 // Swagger route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -10,6 +10,7 @@ const permissionsRoute = require("./permissions.route");
 const adminRateLimiter = require("../../middlewares/adminRateLimiter");
 const auditMiddleware = require("../../middlewares/audit.middleware");
 const systemConfig = require("../../config/system");
+const categoryRoute = require("./category.route");
 
 module.exports = (app) => {
   const PATH_ADMIN = `/${systemConfig.prefixAdmin}`;
@@ -27,4 +28,5 @@ module.exports = (app) => {
   app.use(`${PATH_ADMIN}/logs`, logsRoute);
   app.use(`${PATH_ADMIN}/roles`, rolesRoute);
   app.use(`${PATH_ADMIN}/permissions`, permissionsRoute);
+  app.use(`${PATH_ADMIN}/categories`, categoryRoute);
 };

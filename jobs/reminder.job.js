@@ -4,22 +4,22 @@ const { User, GardenPlant, Reminder, Plant } = require("../models");
 const { Op } = require('sequelize');
 
 const initReminderJob = () => {
-  cron.schedule('0 0 * * * *', async () => {
+  cron.schedule('*/15 * * * * *', async () => {
     try {
       const now = new Date();
       const reminders = await Reminder.findAll({
         include: [
           {
             model: GardenPlant,
-            require: true,
+            required: true,
             include: [
-              { 
-                model: User, 
+              {
+                model: User,
                 required: true,
-                where: { 
-                  fcmToken: { [Op.ne]: null } 
-                } 
-              }, 
+                where: {
+                  fcmToken: { [Op.ne]: null }
+                }
+              },
               { model: Plant, attributes: ['name'] }
             ],
           },
@@ -28,22 +28,33 @@ const initReminderJob = () => {
 
       for (const reminder of reminders) {
         if (!reminder.isPushEnabled) continue;
+        if (!reminder.GardenPlant) continue;
 
         const lastAction = new Date(reminder.lastActionAt);
         const minutesSinceLastAction = Math.floor((now - lastAction) / (1000 * 60));
 
         if (minutesSinceLastAction >= reminder.frequencyDays * 1440) {
           console.log(`Triggering reminder: ${reminder.type} for plant ${reminder.GardenPlant.Plant?.name}, minutes: ${minutesSinceLastAction}/${reminder.frequencyDays * 1440}`);
+
+          if (reminder.type === 'Tưới nước') {
+            const gp = reminder.GardenPlant;
+            if (gp && gp.status !== 'Đang khát' && gp.status !== 'thirsty' && gp.status !== 'Đang bệnh' && gp.status !== 'sick') {
+              gp.status = 'Đang khát';
+              await gp.save();
+              console.log(`Updated status of plant ${gp.id} to Đang khát`);
+            }
+          }
+
           if (reminder.lastNotificationSentAt) {
             const lastSent = new Date(reminder.lastNotificationSentAt);
-            
+
             const isSentToday = lastSent.getDate() === now.getDate() &&
-                     lastSent.getMonth() === now.getMonth() &&
-                     lastSent.getFullYear() === now.getFullYear();
+              lastSent.getMonth() === now.getMonth() &&
+              lastSent.getFullYear() === now.getFullYear();
 
             if (isSentToday) {
               console.log("chay")
-              continue; 
+              continue;
             }
           }
           // Send notification

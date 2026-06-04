@@ -1,5 +1,28 @@
 const libraryPlantService = require('../../services/admin/library_plant.service');
 
+exports.getPlants = async (req, res) => {
+  try {
+    const data = await libraryPlantService.getPlants(req.query);
+    return res.status(200).json({ data });
+  } catch (error) {
+    console.error('getPlants error:', error);
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
+exports.getPlantById = async (req, res) => {
+  try {
+    const data = await libraryPlantService.getPlantById(req.params.id);
+    return res.status(200).json({ data });
+  } catch (error) {
+    console.error('getPlantById error:', error);
+    if (error.message === 'Plant not found') {
+      return res.status(404).json({ message: error.message });
+    }
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
 exports.createPlant = async (req, res) => {
   try {
     if (!req.body.id || !req.body.name || !req.body.category) {
@@ -50,7 +73,7 @@ exports.approvePlant = async (req, res) => {
     if (error.message === 'Plant not found') {
       return res.status(404).json({ message: error.message });
     }
-    return res.status(500).json({ message: 'Internal server error', error: error.message });
+    return res.status(400).json({ message: error.message });
   }
 };
 
