@@ -11,7 +11,7 @@ const initReminderJob = () => {
         include: [
           {
             model: GardenPlant,
-            require: true,
+            required: true,
             include: [
               {
                 model: User,
@@ -28,6 +28,7 @@ const initReminderJob = () => {
 
       for (const reminder of reminders) {
         if (!reminder.isPushEnabled) continue;
+        if (!reminder.GardenPlant) continue;
 
         const lastAction = new Date(reminder.lastActionAt);
         const minutesSinceLastAction = Math.floor((now - lastAction) / (1000 * 60));

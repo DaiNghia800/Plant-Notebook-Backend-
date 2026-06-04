@@ -78,10 +78,31 @@ exports.login = async (req, res) => {
 
       const doc = snapshot.docs[0];
       const firestoreUser = doc.data();
-      userId = doc.id;
-      userIdentifier = firestoreUser.email || firestoreUser.phone;
-      userName = firestoreUser.fullName || firestoreUser.name;
       passwordMatches = await bcrypt.compare(password, firestoreUser.password);
+
+      if (!passwordMatches) {
+        return res.status(401).json({
+          message: "Sai mật khẩu",
+        });
+      }
+
+      // Create the user in PostgreSQL so they have a UUID and can use PostgreSQL features!
+      const pgUser = await User.create({
+        fullName: firestoreUser.fullName || firestoreUser.name || "",
+        name: firestoreUser.name || firestoreUser.fullName || "",
+        email: firestoreUser.email || "",
+        password: firestoreUser.password, // already hashed
+        avatar: firestoreUser.avatar || "",
+        authProvider: firestoreUser.authProvider || "local",
+      });
+
+      userId = pgUser.id;
+      userIdentifier = pgUser.email || firestoreUser.phone;
+      userName = pgUser.fullName;
+
+      // Migrate Firestore document to use the new UUID
+      await db.collection("users").doc(pgUser.id).set(firestoreUser);
+      await db.collection("users").doc(doc.id).delete();
     }
 
     if (!passwordMatches) {
@@ -141,6 +162,14 @@ exports.register = async (req, res) => {
           message: "Email đã được sử dụng",
         });
       }
+
+      // Check PostgreSQL too
+      const pgUserExists = await User.findOne({ where: { email } });
+      if (pgUserExists) {
+        return res.status(400).json({
+          message: "Email đã được sử dụng",
+        });
+      }
     }
 
     if (phone) {
@@ -160,7 +189,16 @@ exports.register = async (req, res) => {
     // 3. hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4. save to db
+    // 4. Create User in PostgreSQL (SQL) first to get the UUID
+    const pgUser = await User.create({
+      fullName: name,
+      name: name,
+      email: email || "",
+      password: hashedPassword,
+      authProvider: "local",
+    });
+
+    // 5. Save to Firestore using the PostgreSQL UUID as doc ID
     const userData = {
       password: hashedPassword,
       name,
@@ -169,10 +207,10 @@ exports.register = async (req, res) => {
     if (email) userData.email = email;
     if (phone) userData.phone = phone;
 
-    const newUserRef = await db.collection("users").add(userData);
+    await db.collection("users").doc(pgUser.id).set(userData);
 
-    // 5. response
-    const responseUser = { id: newUserRef.id, name };
+    // 6. response
+    const responseUser = { id: pgUser.id, name };
     if (email) responseUser.email = email;
     if (phone) responseUser.phone = phone;
 
@@ -219,7 +257,20 @@ exports.googleAuth = async (req, res) => {
       return res.status(401).json({ message: "Không thể xác minh token Google" });
     }
 
-    // 2. Check if user exists in db
+    // 2. Ensure User exists in PostgreSQL (SQL) first to get a valid UUID
+    let pgUser = await User.findOne({ where: { email } });
+    if (!pgUser) {
+      pgUser = await User.create({
+        fullName: name || "",
+        name: name || "",
+        email: email,
+        password: "", // Google auth has no local password
+        avatar: picture || "",
+        authProvider: "google",
+      });
+    }
+
+    // 3. Ensure User exists in Firestore, and is synced with the PostgreSQL UUID
     const snapshot = await db
       .collection("users")
       .where("email", "==", email)
@@ -228,21 +279,29 @@ exports.googleAuth = async (req, res) => {
 
     let userDoc;
     if (snapshot.empty) {
-      // User doesn't exist, create new
-      const newUserRef = await db.collection("users").add({
+      // Create new Firestore document with the PostgreSQL UUID as doc ID
+      const newUserData = {
         email,
         name: name || "",
         avatar: picture || "",
         uid: uid,
         createdAt: new Date().toISOString(),
         authProvider: "google"
-      });
-      userDoc = { id: newUserRef.id, email, name: name || "" };
+      };
+      await db.collection("users").doc(pgUser.id).set(newUserData);
+      userDoc = { id: pgUser.id, email, name: name || "" };
     } else {
-      userDoc = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+      const existingDoc = snapshot.docs[0];
+      if (existingDoc.id !== pgUser.id) {
+        // Migrate Firestore document to use the PostgreSQL UUID as doc ID
+        const currentData = existingDoc.data();
+        await db.collection("users").doc(pgUser.id).set(currentData);
+        await db.collection("users").doc(existingDoc.id).delete();
+      }
+      userDoc = { id: pgUser.id, email, name: name || existingDoc.data().name || "" };
     }
 
-    // 3. Create our own JWT token
+    // 4. Create our own JWT token
     const token = jwt.sign(
       {
         id: userDoc.id,
