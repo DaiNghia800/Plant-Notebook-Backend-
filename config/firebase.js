@@ -1,12 +1,12 @@
-// var admin = require("firebase-admin");
+var admin = require("firebase-admin");
 
-// var serviceAccount = require("./serviceAccountKey.json");
+var serviceAccount = require("./serviceAccountKey.json");
 
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+});
 
-// const db = admin.firestore();
-// const messaging = admin.messaging();
+const db = admin.firestore();
+const messaging = admin.messaging();
 
-// module.exports = { db, messaging };
+module.exports = { db, messaging };
