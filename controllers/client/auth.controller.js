@@ -1,4 +1,4 @@
-const { User } = require("../../models");
+const { User, Role } = require("../../models");
 const { db } = require("../../config/firebase");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -424,5 +424,28 @@ exports.resetPassword = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
+exports.syncFirebase = async (req, res) => {
+  try {
+    const { email, displayName, uid } = req.body;
+
+    // Tìm UUID của role "User" trong DB
+    const userRole = await Role.findOne({ where: { name: "User" } });
+
+    const [user] = await User.findOrCreate({
+      where: { email },
+      defaults: {
+        fullName: displayName || "Người dùng Ứng dụng",
+        password: uid,
+        roleId: userRole ? userRole.id : null,
+      },
+    });
+
+    return res.status(200).json({ err: 0, msg: "Đồng bộ thành công!", data: user });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ err: 1, msg: "Lỗi đồng bộ dữ liệu" });
   }
 };

@@ -34,7 +34,13 @@ app.use(cors({
 }))
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+const morgan = require('morgan');
+const logger = require('./utils/logger');
+
+// Morgan logging using Winston
+app.use(morgan('combined', { stream: logger.stream }));
 
 routeClient(app);
 routeAdmin(app);
