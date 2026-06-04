@@ -11,13 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.belongsTo(models.Role, { foreignKey: 'roleId', as: 'role' });
+      User.belongsTo(models.Role, { foreignKey: 'roleId', as: 'role' })
     }
   }
   User.init({
     id: {
       type: DataTypes.STRING,
-      defaultValue: DataTypes.UUIDV4, 
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       allowNull: false
     },
@@ -50,10 +50,6 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: "local",
     },
     fcmToken: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    role: {
       type: DataTypes.STRING,
       allowNull: true,
     },
