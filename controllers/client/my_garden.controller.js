@@ -3,7 +3,14 @@ const { where } = require("sequelize");
 
 module.exports.getMyGardenPlants = async (req, res) => {
   try {
+    const { userId } = req.query;
+    const whereClause = {};
+    if (userId) {
+      whereClause.userId = userId;
+    }
+
     const gardenPlants = await db.GardenPlant.findAll({
+      where: whereClause,
       include: [
         { model: db.Plant, attributes: ['name', 'imageUrl'] },
         { model: db.Reminder },
@@ -70,14 +77,14 @@ module.exports.createMyGardenPlant = async (req, res) => {
     let plantRecord = null;
     if (plantName) {
       const plant = await db.Plant.findOne({ where: { name: plantName } });
-      if(plant){
+      if (plant) {
         return res.status(400).json({ success: false, message: 'Plant name already exists.' });
       } else {
         plantRecord = await db.Plant.create({
-        name: plantName,
-        description: '',
-        imageUrl,
-      });
+          name: plantName,
+          description: '',
+          imageUrl,
+        });
       }
     } else {
       return res.status(400).json({ success: false, message: 'Plant name is required' });
@@ -207,13 +214,13 @@ module.exports.updateMyGardenPlant = async (req, res) => {
     let plantRecord = null;
     if (plantId) {
       const plant = await db.Plant.findByPk(plantId);
-      if(plant){
+      if (plant) {
         plant.name = plantName;
         plant.save();
-      }else {
+      } else {
         return res.status(400).json({ success: false, message: 'Plant is not found' });
       }
-    } 
+    }
 
     let categoryRecord = null;
     if (categoryId) {
@@ -236,7 +243,7 @@ module.exports.updateMyGardenPlant = async (req, res) => {
       gardenPlant.status = status;
     }
 
-    if(categoryRecord){
+    if (categoryRecord) {
       gardenPlant.categoryId = categoryId;
     }
     const startedAtValue = startedAt || startDate;
@@ -340,9 +347,9 @@ module.exports.createCareHistory = async (req, res) => {
       performedAt: actionDate ? new Date(actionDate) : new Date(),
     });
 
-    const reminder = await db.Reminder.findOne({where: {gardenPlantId: gardenPlantId, type: actionType}});
+    const reminder = await db.Reminder.findOne({ where: { gardenPlantId: gardenPlantId, type: actionType } });
     console.log(reminder)
-    if(reminder){
+    if (reminder) {
       reminder.lastActionAt = actionDate ? new Date(actionDate) : new Date();
       await reminder.save();
     }
