@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../plant_notebook"
+		},
+		{
+			"path": "../plant_notebook_admin"
 		}
 	]
 }
