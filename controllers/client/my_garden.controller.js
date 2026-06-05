@@ -307,6 +307,7 @@ module.exports.deleteMyGardenPlant = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Garden plant not found' });
     }
     await db.Reminder.destroy({ where: { gardenPlantId: gardenPlant.id } });
+    await db.CareHistory.destroy({ where: { gardenPlantId: gardenPlant.id } });
     await gardenPlant.destroy();
     return res.status(200).json({ success: true, message: 'Deleted successfully' });
   } catch (error) {
