@@ -15,10 +15,7 @@ const initReminderJob = () => {
             include: [
               {
                 model: User,
-                required: true,
-                where: {
-                  fcmToken: { [Op.ne]: null }
-                }
+                required: false,
               },
               { model: Plant, attributes: ['name'] }
             ],
@@ -59,8 +56,8 @@ const initReminderJob = () => {
           }
           // Send notification
           const user = reminder.GardenPlant.User;
-          console.log(`User FCM token: ${user.fcmToken ? 'YES' : 'NO'}`);
-          if (user.fcmToken) {
+          if (user && user.fcmToken) {
+            console.log(`User FCM token: ${user.fcmToken ? 'YES' : 'NO'}`);
             const title = `Nhắc nhở chăm sóc cây ${reminder.GardenPlant.Plant?.name || 'của bạn'}`;
             const body = `Đã đến lúc ${reminder.type === 'Tưới nước' ? 'tưới nước' : 'bón phân'} cho cây!`;
 
@@ -74,7 +71,6 @@ const initReminderJob = () => {
             reminder.lastNotificationSentAt = new Date();
             await reminder.save();
             console.log(`Notification sent to ${user.fullName} for ${reminder.type}`);
-
           }
         }
       }

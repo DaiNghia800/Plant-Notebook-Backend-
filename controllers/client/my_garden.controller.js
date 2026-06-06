@@ -78,7 +78,7 @@ module.exports.createMyGardenPlant = async (req, res) => {
     if (plantName) {
       const plant = await db.Plant.findOne({ where: { name: plantName } });
       if (plant) {
-        return res.status(400).json({ success: false, message: 'Plant name already exists.' });
+        plantRecord = plant;
       } else {
         plantRecord = await db.Plant.create({
           name: plantName,
@@ -90,19 +90,29 @@ module.exports.createMyGardenPlant = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Plant name is required' });
     }
 
-    const gardenPlant = await db.GardenPlant.create({
-      userId,
-      plantId: plantRecord.id,
-      categoryId: categoryRecord.id,
-      status,
-      startedAt: new Date(startDate || startedAt),
-      imageUrl,
-    });
-
     const startedAtDate = new Date(startDate || startedAt);
     const parsedWatering = parseFloat(String(wateringCycle));
     const parsedFertilizing = parseFloat(String(fertilizingCycle));
     const pushEnabled = String(isPushEnabled).toLowerCase() === 'true';
+
+    let initialStatus = status || 'Khỏe mạnh';
+    if (!Number.isNaN(parsedWatering) && parsedWatering > 0) {
+      const now = new Date();
+      const msSinceStart = now - startedAtDate;
+      const daysSinceStart = msSinceStart / (1000 * 60 * 60 * 24);
+      if (daysSinceStart >= parsedWatering && initialStatus !== 'Đang bệnh' && initialStatus !== 'sick') {
+        initialStatus = 'Đang khát';
+      }
+    }
+
+    const gardenPlant = await db.GardenPlant.create({
+      userId,
+      plantId: plantRecord.id,
+      categoryId: categoryRecord.id,
+      status: initialStatus,
+      startedAt: startedAtDate,
+      imageUrl,
+    });
 
     const reminders = [];
     if (!Number.isNaN(parsedWatering) && parsedWatering > 0) {
