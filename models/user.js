@@ -25,10 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    // name: {
+    //   type: DataTypes.STRING,
+    //   allowNull: true,
+    // },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -41,14 +41,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    avatar: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    authProvider: {
-      type: DataTypes.STRING,
-      defaultValue: "local",
-    },
+    // avatar: {
+    //   type: DataTypes.STRING,
+    //   allowNull: true,
+    // },
+    // authProvider: {
+    //   type: DataTypes.STRING,
+    //   defaultValue: "local",
+    // },
     fcmToken: {
       type: DataTypes.STRING,
       allowNull: true,

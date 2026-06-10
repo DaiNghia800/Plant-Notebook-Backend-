@@ -93,5 +93,6 @@ router.post("/update-fcm-token", controller.updateFcmToken);
  *         description: Lỗi server
  */
 router.post("/send-test-notification", controller.sendTestNotification);
+router.get("/:id", controller.getUserById);
 
 module.exports = router;

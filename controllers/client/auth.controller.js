@@ -33,6 +33,7 @@ exports.login = async (req, res) => {
     let userIdentifier;
     let userName;
     let passwordMatches = false;
+    let userCreatedAt = null;
 
     try {
       if (email) {
@@ -48,6 +49,7 @@ exports.login = async (req, res) => {
       userId = user.id;
       userIdentifier = user.email || user.phone;
       userName = user.fullName;
+      userCreatedAt = user.createdAt;
       if (isHashedPassword(user.password)) {
         passwordMatches = await bcrypt.compare(password, user.password);
       } else {
@@ -99,6 +101,7 @@ exports.login = async (req, res) => {
       userId = pgUser.id;
       userIdentifier = pgUser.email || firestoreUser.phone;
       userName = pgUser.fullName;
+      userCreatedAt = pgUser.createdAt;
 
       // Migrate Firestore document to use the new UUID
       await db.collection("users").doc(pgUser.id).set(firestoreUser);
@@ -127,6 +130,7 @@ exports.login = async (req, res) => {
         id: userId,
         email: userIdentifier,
         name: userName,
+        createdAt: userCreatedAt,
       },
     });
   } catch (err) {
@@ -210,7 +214,7 @@ exports.register = async (req, res) => {
     await db.collection("users").doc(pgUser.id).set(userData);
 
     // 6. response
-    const responseUser = { id: pgUser.id, name };
+    const responseUser = { id: pgUser.id, name, createdAt: pgUser.createdAt };
     if (email) responseUser.email = email;
     if (phone) responseUser.phone = phone;
 
@@ -318,6 +322,7 @@ exports.googleAuth = async (req, res) => {
         id: userDoc.id,
         email: userDoc.email,
         name: userDoc.name,
+        createdAt: pgUser.createdAt,
       },
     });
   } catch (err) {

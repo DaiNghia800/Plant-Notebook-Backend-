@@ -21,6 +21,17 @@ module.exports = {
     return await db.User.findByPk(id, { include: [{ model: db.Role, as: 'role' }] });
   },
 
+  /** Get user profile with role and permissions by id */
+  async getProfile(id) {
+    return await db.User.findByPk(id, {
+      include: [{
+        model: db.Role,
+        as: 'role',
+        include: [{ model: db.Permission, as: 'permissions' }]
+      }]
+    });
+  },
+
   /** Create a new user (admin can set roleId) */
   async create(data) {
     // data may include roleId
