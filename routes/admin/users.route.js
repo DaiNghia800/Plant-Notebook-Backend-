@@ -9,6 +9,7 @@ const controller = require('../../controllers/admin/user.controller');
 router.use(authMiddleware);
 
 router.get('/', permissionMiddleware('users:read'), controller.getAll);
+router.get('/me', controller.getMe);
 router.get('/:id', permissionMiddleware('users:read'), controller.getById);
 router.post('/', permissionMiddleware('users:write'), controller.create);
 router.put('/:id', permissionMiddleware('users:write'), controller.update);

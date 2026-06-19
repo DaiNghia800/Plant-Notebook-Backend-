@@ -17,6 +17,34 @@ module.exports = {
     }
   },
 
+  // GET /admin/users/me
+  async getMe(req, res) {
+    try {
+      const user = await userService.getProfile(req.user.id);
+      if (!user) {
+        return res.status(404).json({ err: 1, msg: 'User not found' });
+      }
+      
+      const roleString = user.getDataValue('role');
+      const roleObject = user.role;
+      
+      return res.status(200).json({
+        err: 0,
+        data: {
+          id: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          role: roleString,
+          roleId: user.roleId,
+          Role: roleObject
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ err: -1, msg: 'Failed to fetch profile' });
+    }
+  },
+
   // GET /admin/users/:id
   async getById(req, res) {
     try {
