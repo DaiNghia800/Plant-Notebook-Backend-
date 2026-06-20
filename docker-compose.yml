@@ -20,6 +20,26 @@ services:
     environment:
       - NODE_ENV=production
       - DB_HOST=postgres
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+
+  ai_worker:
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG:-latest}
+    build: .
+    container_name: plant_notebook_ai_worker
+    restart: unless-stopped
+    command: node workers/aiWorker.js
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+      - ./config/serviceAccountKey.json:/app/config/serviceAccountKey.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
 
   postgres:
     image: postgres:15-alpine

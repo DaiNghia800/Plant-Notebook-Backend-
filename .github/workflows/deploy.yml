@@ -76,6 +76,8 @@ jobs:
             cat << 'EOF_ENV' > .env
             ${{ secrets.ENV_FILE }}
             EOF_ENV
+            
+            echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
 
             cat << 'EOF_JSON' > config/serviceAccountKey.json
             ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -101,6 +103,25 @@ jobs:
                 environment:
                   - NODE_ENV=production
                   - DB_HOST=postgres
+                  - GEMINI_API_KEY=${GEMINI_API_KEY}
+
+              ai_worker:
+                image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+                container_name: plant_notebook_ai_worker
+                restart: unless-stopped
+                command: node workers/aiWorker.js
+                env_file:
+                  - .env
+                volumes:
+                  - ./logs:/app/logs
+                  - ./config/serviceAccountKey.json:/app/config/serviceAccountKey.json:ro
+                depends_on:
+                  postgres:
+                    condition: service_healthy
+                environment:
+                  - NODE_ENV=production
+                  - DB_HOST=postgres
+                  - GEMINI_API_KEY=${GEMINI_API_KEY}
 
               postgres:
                 image: postgres:15-alpine

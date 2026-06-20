@@ -168,7 +168,7 @@ router.get('/check-existence', controller.checkExistence);
  *       500:
  *         description: Lỗi máy chủ nội bộ
  */
-router.post('/scan', uploadS3.singleImage, controller.scanPlantImage);
+router.post('/scan', uploadS3.singleImage, uploadS3.uploadToS3, controller.scanPlantImage);
 
 /**
  * @swagger

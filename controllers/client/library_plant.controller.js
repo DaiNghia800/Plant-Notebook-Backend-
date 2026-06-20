@@ -92,23 +92,42 @@ exports.checkExistence = async (req, res) => {
   }
 };
 
+const sqsService = require('../../services/shared/sqsService');
+const db = require('../../models');
+
 exports.scanPlantImage = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'Image file is required' });
+    const imageUrl = req.body.imageUrl || req.body.image_url;
+    if (!imageUrl) {
+      return res.status(400).json({ message: 'Image file is required and must be uploaded successfully' });
     }
 
-    console.log('[scanPlantImage] Processing photo scan. Size:', req.file.size);
-    const result = await geminiScannerService.scanPlant(req.file.buffer, req.file.mimetype);
-    
-    return res.status(200).json(result);
+    // Try to get userId if available (assuming authMiddleware might be used or passed via query/header)
+    const userId = req.user ? req.user.id : (req.headers['x-user-id'] || req.query.user_id || 'anonymous');
+
+    // 1. Tạo bản ghi AiScanTask trạng thái PENDING
+    const scanTask = await db.AiScanTask.create({
+      userId: userId,
+      imageUrl: imageUrl,
+      status: 'PENDING'
+    });
+
+    // 2. Đẩy message vào SQS
+    const messageBody = {
+      taskId: scanTask.id,
+      imageUrl: imageUrl
+    };
+    await sqsService.sendMessage(messageBody);
+
+    // 3. Trả về cho client 202 Accepted
+    return res.status(202).json({
+      success: true,
+      message: 'Đang xử lý phân tích AI',
+      taskId: scanTask.id
+    });
+
   } catch (error) {
     console.error('scanPlantImage error:', error);
-    
-    if (error.message === 'all_ai_keys_rate_limited') {
-      return res.status(429).json({ message: 'Tất cả API key đang bị giới hạn lượt gọi (Rate limited). Vui lòng thử lại sau.' });
-    }
-    
-    return res.status(500).json({ message: 'Lỗi phân tích hình ảnh từ AI', error: error.message });
+    return res.status(500).json({ message: 'Lỗi khi đẩy yêu cầu phân tích hình ảnh vào hàng đợi', error: error.message });
   }
 };
