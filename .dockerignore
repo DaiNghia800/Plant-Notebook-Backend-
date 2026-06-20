@@ -9,8 +9,6 @@ config/serviceAccountKey.json
 *.code-workspace
 logs/
 *.log
-seed.js
-seeds/
 scripts/
 plant_notebook.sql
 .DS_Store
