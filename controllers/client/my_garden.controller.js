@@ -207,8 +207,6 @@ module.exports.updateMyGardenPlant = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Garden plant not found' });
     }
 
-    console.log(req.body)
-
     const {
       plantId,
       plantName,
@@ -226,7 +224,7 @@ module.exports.updateMyGardenPlant = async (req, res) => {
       const plant = await db.Plant.findByPk(plantId);
       if (plant) {
         plant.name = plantName;
-        plant.save();
+        await plant.save();
       } else {
         return res.status(400).json({ success: false, message: 'Plant is not found' });
       }
@@ -342,7 +340,6 @@ module.exports.getCareHistory = async (req, res) => {
 
 module.exports.createCareHistory = async (req, res) => {
   try {
-    console.log(req.body)
     const { gardenPlantId, type, actionDate, notes } = req.body;
 
     // Validate garden plant exists
@@ -359,7 +356,6 @@ module.exports.createCareHistory = async (req, res) => {
     });
 
     const reminder = await db.Reminder.findOne({ where: { gardenPlantId: gardenPlantId, type: actionType } });
-    console.log(reminder)
     if (reminder) {
       reminder.lastActionAt = actionDate ? new Date(actionDate) : new Date();
       await reminder.save();

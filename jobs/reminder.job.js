@@ -4,7 +4,7 @@ const { User, GardenPlant, Reminder, Plant } = require("../models");
 const { Op } = require('sequelize');
 
 const initReminderJob = () => {
-  cron.schedule('*/15 * * * * *', async () => {
+  cron.schedule('0 * * * *', async () => {
     try {
       const now = new Date();
       const reminders = await Reminder.findAll({
@@ -50,7 +50,6 @@ const initReminderJob = () => {
               lastSent.getFullYear() === now.getFullYear();
 
             if (isSentToday) {
-              console.log("chay")
               continue;
             }
           }

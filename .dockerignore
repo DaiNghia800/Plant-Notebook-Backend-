@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+.env
+.env.*
+!.env.example
+config/serviceAccountKey.json
+.git
+.vscode
+*.code-workspace
+logs/
+*.log
+seed.js
+seeds/
+scripts/
+plant_notebook.sql
+.DS_Store
