@@ -18,7 +18,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - DB_HOST=postgres
       - GEMINI_API_KEY=${GEMINI_API_KEY}
 
@@ -37,7 +37,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - DB_HOST=postgres
       - GEMINI_API_KEY=${GEMINI_API_KEY}
 
