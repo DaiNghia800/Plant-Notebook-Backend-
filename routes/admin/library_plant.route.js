@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../../controllers/admin/library_plant.controller');
-const uploadCloudinary = require('../../middlewares/uploadCloudinary');
+const uploadS3 = require('../../middlewares/uploadS3');
 
 /**
  * @swagger
@@ -194,7 +194,7 @@ router.put('/:id/reject', controller.rejectPlant);
  *       400:
  *         description: Thiếu thông tin bắt buộc
  */
-router.post('/', uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.createPlant);
+router.post('/', uploadS3.singleImage, uploadS3.uploadToS3, controller.createPlant);
 
 /**
  * @swagger
@@ -270,7 +270,7 @@ router.post('/', uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudina
  *       404:
  *         description: Không tìm thấy cây
  */
-router.put('/:id', uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.updatePlant);
+router.put('/:id', uploadS3.singleImage, uploadS3.uploadToS3, controller.updatePlant);
 
 /**
  * @swagger

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../../controllers/client/my_garden.controller");
-const uploadCloudinary = require("../../middlewares/uploadCloudinary");
+const uploadS3 = require("../../middlewares/uploadS3");
 
 /**
  * @swagger
@@ -58,7 +58,7 @@ router.get("/plants/:id", controller.getMyGardenPlantById);
  *       400:
  *         description: Bad request
  */
-router.post("/plants", uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.createMyGardenPlant);
+router.post("/plants", uploadS3.singleImage, uploadS3.uploadToS3, controller.createMyGardenPlant);
 
 /**
  * @swagger
@@ -122,7 +122,7 @@ router.post("/reminders", controller.createOrUpdateReminders);
 //  *       200:
 //  *         description: Updated
 //  */
-router.put("/plants/:id", uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.updateMyGardenPlant);
+router.put("/plants/:id", uploadS3.singleImage, uploadS3.uploadToS3, controller.updateMyGardenPlant);
 
 // /**
 //  * @swagger

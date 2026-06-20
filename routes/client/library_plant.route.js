@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../../controllers/client/library_plant.controller');
-const uploadCloudinary = require('../../middlewares/uploadCloudinary');
+const uploadS3 = require('../../middlewares/uploadS3');
 const authMiddleware = require('../../middlewares/auth.middleware');
 
 /**
@@ -113,7 +113,7 @@ router.get('/', controller.getAllPlants);
  *       500:
  *         description: Lỗi hệ thống nội bộ
  */
-router.post('/contribute', authMiddleware, uploadCloudinary.singleImage, uploadCloudinary.uploadToCloudinary, controller.contributePlant);
+router.post('/contribute', authMiddleware, uploadS3.singleImage, uploadS3.uploadToS3, controller.contributePlant);
 
 /**
  * @swagger
@@ -168,7 +168,7 @@ router.get('/check-existence', controller.checkExistence);
  *       500:
  *         description: Lỗi máy chủ nội bộ
  */
-router.post('/scan', uploadCloudinary.singleImage, controller.scanPlantImage);
+router.post('/scan', uploadS3.singleImage, controller.scanPlantImage);
 
 /**
  * @swagger

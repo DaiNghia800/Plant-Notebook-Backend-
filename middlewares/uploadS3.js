@@ -1,12 +1,5 @@
-const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
-
-// Cấu hình Cloudinary bằng các biến môi trường từ file .env
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
+const { uploadToS3 } = require('../services/shared/s3Service');
 
 // Cấu hình Multer để lưu trữ tạm thời tệp trong bộ nhớ (Memory Storage) dưới dạng Buffer
 const storage = multer.memoryStorage();
@@ -31,53 +24,27 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
-// Middleware xử lý việc tải hình ảnh từ Buffer lên Cloudinary
-const uploadToCloudinary = async (req, res, next) => {
+// Middleware xử lý việc tải hình ảnh từ Buffer lên Amazon S3
+const uploadToS3Middleware = async (req, res, next) => {
   try {
-    // Nếu không có tệp nào được tải lên (ví dụ: client gửi trực tiếp link ảnh qua JSON)
+    // Nếu không có tệp nào được tải lên (ví dụ: client gửi trực tiếp link ảnh qua JSON hoặc không update ảnh)
     if (!req.file) {
       return next();
     }
 
-    // Kiểm tra cấu hình Cloudinary trong .env
-    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-      console.warn("Cảnh báo: Thiếu cấu hình Cloudinary (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) trong file .env. Bỏ qua tải lên Cloudinary.");
-      return next();
-    }
-
-    // Hàm chuyển đổi file buffer thành stream để upload lên Cloudinary
-    const streamUpload = (req) => {
-      return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          {
-            folder: 'plant_notebook', // Thư mục lưu trữ trên Cloudinary
-            resource_type: 'auto'
-          },
-          (error, result) => {
-            if (result) {
-              resolve(result);
-            } else {
-              reject(error);
-            }
-          }
-        );
-        stream.end(req.file.buffer);
-      });
-    };
-
-    // Thực hiện upload và lấy kết quả trả về
-    const result = await streamUpload(req);
+    // Thực hiện upload qua S3 Service
+    const publicUrl = await uploadToS3(req.file.buffer, req.file.mimetype, req.file.originalname);
     
-    // Gán URL ảnh nhận được từ Cloudinary vào req.body.imageUrl và req.body.image_url
+    // Gán URL ảnh nhận được từ S3 vào req.body.imageUrl và req.body.image_url
     // Cách này giúp tương thích với cả camelCase và snake_case của các controller/service khác nhau
-    req.body.imageUrl = result.secure_url;
-    req.body.image_url = result.secure_url;
+    req.body.imageUrl = publicUrl;
+    req.body.image_url = publicUrl;
     
     next();
   } catch (error) {
-    console.error('Lỗi khi tải ảnh lên Cloudinary:', error);
+    console.error('Lỗi khi tải ảnh lên Amazon S3:', error);
     return res.status(500).json({
-      message: 'Lỗi tải ảnh lên Cloudinary',
+      message: 'Lỗi tải ảnh lên hệ thống S3',
       error: error.message
     });
   }
@@ -94,7 +61,7 @@ const singleImageWrapper = (req, res, next) => {
         });
       }
       return res.status(400).json({
-        message: `Lỗi tải tải ảnh: ${err.message}`
+        message: `Lỗi xử lý file ảnh: ${err.message}`
       });
     } else if (err) {
       console.warn('[singleImageWrapper] Non-Multer Error occurred:', err.message);
@@ -108,5 +75,5 @@ const singleImageWrapper = (req, res, next) => {
 
 module.exports = {
   singleImage: singleImageWrapper, // Nhận file với key là 'image' trong form-data
-  uploadToCloudinary
+  uploadToS3: uploadToS3Middleware // Sử dụng S3 thay cho Cloudinary
 };
