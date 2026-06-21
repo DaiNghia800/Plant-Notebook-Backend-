@@ -1,10 +1,21 @@
 const { Category, LibraryPlant } = require('../../models');
+const { getCache, setCache, deleteCache } = require('../../config/redis');
 
 exports.getAllCategories = async (req, res) => {
   try {
+    // Cache-Aside cho danh sách danh mục
+    const cacheKey = 'categories:list';
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      console.log('Cache Hit!');
+      return res.status(200).json({ data: cached });
+    }
+
+    console.log('Cache Miss!');
     const categories = await Category.findAll({
       order: [['createdAt', 'DESC']]
     });
+    await setCache(cacheKey, categories, 600); // TTL 10 phút
     return res.status(200).json({ data: categories });
   } catch (error) {
     console.error('getAllCategories error:', error);
@@ -26,6 +37,7 @@ exports.createCategory = async (req, res) => {
     }
 
     const newCategory = await Category.create({ name: name.trim() });
+    await deleteCache('categories:list'); // Invalidate cache
     return res.status(201).json({ message: 'Tạo danh mục thành công', data: newCategory });
   } catch (error) {
     console.error('createCategory error:', error);
@@ -54,6 +66,7 @@ exports.updateCategory = async (req, res) => {
     }
 
     await category.update({ name: name.trim() });
+    await deleteCache('categories:list'); // Invalidate cache
     return res.status(200).json({ message: 'Cập nhật danh mục thành công', data: category });
   } catch (error) {
     console.error('updateCategory error:', error);
@@ -81,6 +94,7 @@ exports.deleteCategory = async (req, res) => {
     }
 
     await category.destroy();
+    await deleteCache('categories:list'); // Invalidate cache
     return res.status(200).json({ message: 'Xóa danh mục thành công' });
   } catch (error) {
     console.error('deleteCategory error:', error);

@@ -1,10 +1,22 @@
 const libraryPlantService = require('../../services/client/library_plant.service');
 const geminiScannerService = require('../../services/client/gemini_scanner.service');
+const { getCache, setCache, deleteCacheByPattern } = require('../../config/redis');
 
 exports.getAllPlants = async (req, res) => {
   try {
     const { category, isTrending, isRare, approvalStatus } = req.query;
+
+    // Tạo cache key dựa trên query filters
+    const cacheKey = `plants:list:${JSON.stringify({ category, isTrending, isRare, approvalStatus })}`;
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      console.log('Cache Hit!');
+      return res.status(200).json({ data: cached });
+    }
+
+    console.log('Cache Miss!');
     const plants = await libraryPlantService.getAllPlants({ category, isTrending, isRare, approvalStatus });
+    await setCache(cacheKey, plants, 300); // TTL 5 phút
     return res.status(200).json({ data: plants });
   } catch (error) {
     console.error('getAllPlants error:', error);
@@ -14,10 +26,22 @@ exports.getAllPlants = async (req, res) => {
 
 exports.getPlantById = async (req, res) => {
   try {
-    const plant = await libraryPlantService.getPlantById(req.params.id);
+    const plantId = req.params.id;
+
+    // Cache-Aside cho chi tiết cây
+    const cacheKey = `plants:detail:${plantId}`;
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      console.log('Cache Hit!');
+      return res.status(200).json({ data: cached });
+    }
+
+    console.log('Cache Miss!');
+    const plant = await libraryPlantService.getPlantById(plantId);
     if (!plant) {
       return res.status(404).json({ message: 'Plant not found in library' });
     }
+    await setCache(cacheKey, plant, 600); // TTL 10 phút
     return res.status(200).json({ data: plant });
   } catch (error) {
     console.error('getPlantById error:', error);
@@ -68,6 +92,7 @@ exports.contributePlant = async (req, res) => {
 
     const userId = req.user ? req.user.id : (req.headers['x-user-id'] || req.query.user_id || 'mobile-user');
     const contributedPlant = await libraryPlantService.contributePlant(req.body, userId);
+    await deleteCacheByPattern('plants:*'); // Invalidate plant caches
     return res.status(201).json({
       message: 'Gửi đề xuất cây mới thành công, đang chờ Admin kiểm duyệt.',
       data: contributedPlant
