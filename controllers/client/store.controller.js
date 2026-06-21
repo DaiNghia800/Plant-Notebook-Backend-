@@ -1,9 +1,20 @@
 const db = require("../../models");
+const { getCache, setCache, deleteCache, deleteCacheByPattern } = require('../../config/redis');
 
 // Get all stores with filter options (by type)
 module.exports.getStores = async (req, res) => {
   try {
     const { type } = req.query;
+
+    // Cache-Aside cho danh sách cửa hàng
+    const cacheKey = `stores:list:${type || 'all'}`;
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      console.log('Cache Hit!');
+      return res.status(200).json({ success: true, data: cached });
+    }
+
+    console.log('Cache Miss!');
     const whereClause = {};
     if (type && type !== "Tất cả") {
       if (type === "Vườn ươm") {
@@ -25,6 +36,7 @@ module.exports.getStores = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
+    await setCache(cacheKey, stores, 300); // TTL 5 phút
     return res.status(200).json({ success: true, data: stores });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -35,6 +47,16 @@ module.exports.getStores = async (req, res) => {
 module.exports.getStoreById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Cache-Aside cho chi tiết cửa hàng
+    const cacheKey = `stores:detail:${id}`;
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      console.log('Cache Hit!');
+      return res.status(200).json({ success: true, data: cached });
+    }
+
+    console.log('Cache Miss!');
     const store = await db.Store.findOne({
       where: { id },
       include: [
@@ -61,6 +83,7 @@ module.exports.getStoreById = async (req, res) => {
       store.reviews.sort((a, b) => b.createdAt - a.createdAt);
     }
 
+    await setCache(cacheKey, store, 600); // TTL 10 phút
     return res.status(200).json({ success: true, data: store });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -123,6 +146,10 @@ module.exports.createReview = async (req, res) => {
         }
       ]
     });
+
+    // Invalidate cache sau khi tạo review (rating thay đổi)
+    await deleteCache(`stores:detail:${storeId}`);
+    await deleteCacheByPattern('stores:list:*');
 
     return res.status(201).json({ success: true, data: reviewWithUser, storeRating: store.rating });
   } catch (error) {

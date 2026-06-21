@@ -1,4 +1,5 @@
 const libraryPlantService = require('../../services/admin/library_plant.service');
+const { deleteCacheByPattern } = require('../../config/redis');
 
 exports.getPlants = async (req, res) => {
   try {
@@ -57,6 +58,7 @@ exports.createPlant = async (req, res) => {
     }
 
     const newPlant = await libraryPlantService.createPlant(req.body);
+    await deleteCacheByPattern('plants:*'); // Invalidate plant caches
     return res.status(201).json({ data: newPlant });
   } catch (error) {
     console.error('createPlant error:', error);
@@ -67,6 +69,7 @@ exports.createPlant = async (req, res) => {
 exports.approvePlant = async (req, res) => {
   try {
     const approvedPlant = await libraryPlantService.approvePlant(req.params.id);
+    await deleteCacheByPattern('plants:*'); // Invalidate plant caches
     return res.status(200).json({ message: 'Đã duyệt cây thành công', data: approvedPlant });
   } catch (error) {
     console.error('approvePlant error:', error);
@@ -80,6 +83,7 @@ exports.approvePlant = async (req, res) => {
 exports.rejectPlant = async (req, res) => {
   try {
     const rejectedPlant = await libraryPlantService.rejectPlant(req.params.id);
+    await deleteCacheByPattern('plants:*'); // Invalidate plant caches
     return res.status(200).json({ message: 'Đã từ chối cây đề xuất', data: rejectedPlant });
   } catch (error) {
     console.error('rejectPlant error:', error);
@@ -120,6 +124,7 @@ exports.updatePlant = async (req, res) => {
     }
 
     const updatedPlant = await libraryPlantService.updatePlant(req.params.id, req.body);
+    await deleteCacheByPattern('plants:*'); // Invalidate plant caches
     return res.status(200).json({ data: updatedPlant });
   } catch (error) {
     console.error('updatePlant error:', error);
@@ -133,6 +138,7 @@ exports.updatePlant = async (req, res) => {
 exports.deletePlant = async (req, res) => {
   try {
     await libraryPlantService.deletePlant(req.params.id);
+    await deleteCacheByPattern('plants:*'); // Invalidate plant caches
     return res.status(200).json({ message: 'Plant deleted successfully' });
   } catch (error) {
     console.error('deletePlant error:', error);
