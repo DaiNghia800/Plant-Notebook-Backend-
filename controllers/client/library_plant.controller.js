@@ -131,3 +131,34 @@ exports.scanPlantImage = async (req, res) => {
     return res.status(500).json({ message: 'Lỗi khi đẩy yêu cầu phân tích hình ảnh vào hàng đợi', error: error.message });
   }
 };
+
+exports.getScanResult = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    const scanTask = await db.AiScanTask.findByPk(taskId);
+
+    if (!scanTask) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy task'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        taskId: scanTask.id,
+        status: scanTask.status,
+        aiResult: scanTask.aiResult
+      }
+    });
+  } catch (error) {
+    console.error('getScanResult error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Lỗi hệ thống nội bộ',
+      error: error.message
+    });
+  }
+};

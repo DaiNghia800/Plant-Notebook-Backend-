@@ -172,6 +172,30 @@ router.post('/scan', uploadS3.singleImage, uploadS3.uploadToS3, controller.scanP
 
 /**
  * @swagger
+ * /library-plants/scan/{taskId}:
+ *   get:
+ *     summary: Lấy kết quả phân tích AI theo taskId
+ *     tags: [LibraryPlants]
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID của task phân tích AI
+ *     responses:
+ *       200:
+ *         description: Trả về kết quả phân tích AI thành công
+ *       404:
+ *         description: Không tìm thấy task
+ *       500:
+ *         description: Lỗi hệ thống nội bộ
+ */
+router.get('/scan/:taskId', controller.getScanResult);
+
+/**
+ * @swagger
  * /library-plants/{id}:
  *   get:
  *     summary: Lấy chi tiết cây theo ID
