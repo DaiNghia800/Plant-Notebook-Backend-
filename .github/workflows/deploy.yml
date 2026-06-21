@@ -73,16 +73,25 @@ jobs:
             mkdir -p ~/plant-notebook-backend/config
             cd ~/plant-notebook-backend
 
+            # === 1. Generate .env from GitHub Secrets ===
             cat << 'EOF_ENV' > .env
             ${{ secrets.ENV_FILE }}
             EOF_ENV
-            
+
+            # Append DB & API secrets (sourced from GitHub Secrets)
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
             echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
 
+            # === 2. Write Firebase service account key ===
             cat << 'EOF_JSON' > config/serviceAccountKey.json
             ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
             EOF_JSON
 
+            # === 3. Write clean docker-compose.yml (no local postgres) ===
             cat << 'EOF' > docker-compose.yml
             version: '3.8'
             services:
@@ -97,13 +106,8 @@ jobs:
                 volumes:
                   - ./logs:/app/logs
                   - ./config/serviceAccountKey.json:/app/config/serviceAccountKey.json:ro
-                depends_on:
-                  postgres:
-                    condition: service_healthy
                 environment:
-                  - NODE_ENV=development
-                  - DB_HOST=postgres
-                  - GEMINI_API_KEY=${GEMINI_API_KEY}
+                  - NODE_ENV=production
 
               ai_worker:
                 image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
@@ -115,41 +119,14 @@ jobs:
                 volumes:
                   - ./logs:/app/logs
                   - ./config/serviceAccountKey.json:/app/config/serviceAccountKey.json:ro
-                depends_on:
-                  postgres:
-                    condition: service_healthy
                 environment:
-                  - NODE_ENV=development
-                  - DB_HOST=postgres
-                  - GEMINI_API_KEY=${GEMINI_API_KEY}
-
-              postgres:
-                image: postgres:15-alpine
-                container_name: plant_notebook_db
-                restart: unless-stopped
-                env_file:
-                  - .env
-                environment:
-                  POSTGRES_USER: ${DB_USER:-postgres}
-                  POSTGRES_PASSWORD: ${DB_PASSWORD:-admin123}
-                  POSTGRES_DB: ${DB_NAME:-plant_notebook}
-                ports:
-                  - "5432:5432"
-                volumes:
-                  - postgres_data:/var/lib/postgresql/data
-                healthcheck:
-                  test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-plant_notebook}"]
-                  interval: 10s
-                  timeout: 5s
-                  retries: 5
-
-            volumes:
-              postgres_data:
+                  - NODE_ENV=production
             EOF
 
+            # === 4. Pull new image, restart services ===
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-            
-            docker compose pull backend
+
+            docker compose pull backend ai_worker
             docker compose down
             docker compose up -d
             docker image prune -af
