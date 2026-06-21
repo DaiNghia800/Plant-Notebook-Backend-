@@ -4,7 +4,7 @@ const { sequelize } = require("./config/database");
 
 // Import models
 const db = require("./models");
-const { User, LibraryPlant, GardenPlant, Plant, Category, Reminder, CareHistory } = db;
+const { User, LibraryPlant, GardenPlant, Plant, Category, Reminder, CareHistory, Post, Comment, PostLike } = db;
 
 const runSeeder = async () => {
   try {
@@ -1127,6 +1127,77 @@ const runSeeder = async () => {
     }
 
     console.log(`Đã tạo thành công ${myGardenData.length} cây cảnh thực tế trong vườn người dùng.`);
+
+    // ====== 6. SEED BÀI VIẾT CỘNG ĐỒNG ======
+    await PostLike.destroy({ where: {} });
+    await Comment.destroy({ where: {} });
+    await Post.destroy({ where: {} });
+
+    const postsData = [
+      {
+        userId: users[0].id,
+        title: null,
+        content: 'Góc sen đá mới thay chậu hôm qua! Nhìn cưng xỉu luôn mọi người ơi 🌱\nMẹo nhỏ: Đất trồng sen đá cần thoát nước cực tốt nha, mình hay trộn thêm đá perlite.',
+        imageUrl: 'https://images.unsplash.com/photo-1520302630591-fd1c66ed11db?auto=format&fit=crop&q=80&w=800',
+      },
+      {
+        userId: users[1].id,
+        title: null,
+        content: 'Trầu bà nhà mình vừa ra lá mới rất to và xanh 💚 Bí quyết của mình là tưới nước khi đất khô 2-3cm và đặt gần cửa sổ có ánh sáng tán xạ. Ai muốn trao đổi kinh nghiệm chăm trầu bà không?',
+        imageUrl: 'https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&q=80&w=800',
+      },
+      {
+        userId: users[2].id,
+        title: null,
+        content: 'Hôm nay đi chợ cây về với một bé Monstera Deliciosa siêu đẹp! 🌿 Lá xẻ thùy rất hoàn hảo. Nghe nói loại này cần độ ẩm cao, các bạn có kinh nghiệm chăm không chia sẻ với mình nhé!',
+        imageUrl: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?auto=format&fit=crop&q=80&w=800',
+      },
+      {
+        userId: users[0].id,
+        title: null,
+        content: 'Lưỡi hổ nhà mình đang ra mầm con siêu nhiều! Sắp tới mình sẽ tách chậu và tặng cho ai muốn nuôi nhé 🎁 Cây rất dễ sống, không cần tưới thường xuyên, phù hợp cho người bận rộn.',
+        imageUrl: null,
+      },
+      {
+        userId: users[1].id,
+        title: null,
+        content: 'Vừa thử mix đất cho xương rồng theo công thức: 50% đất thường + 30% cát thô + 20% perlite. Kết quả là cây phát triển cực tốt, không bị úng rễ 🌵 Chia sẻ cho các bạn cùng thử!',
+        imageUrl: 'https://images.unsplash.com/photo-1508847154043-be12a62861c1?auto=format&fit=crop&q=80&w=800',
+      },
+    ];
+
+    const createdPosts = await Post.bulkCreate(postsData, { returning: true });
+    console.log(`Đã tạo thành công ${createdPosts.length} bài viết cộng đồng mẫu.`);
+
+    // Seed bình luận mẫu
+    const commentsData = [
+      { postId: createdPosts[0].id, userId: users[1].id, content: 'Đẹp quá bạn ơi! Chậu mua ở đâu vậy?' },
+      { postId: createdPosts[0].id, userId: users[2].id, content: 'Cho mình hỏi tỷ lệ trộn đất perlite của bạn là bao nhiêu ạ?' },
+      { postId: createdPosts[1].id, userId: users[0].id, content: 'Nhà mình cũng trồng trầu bà, cây leo cực nhanh luôn!' },
+      { postId: createdPosts[1].id, userId: users[2].id, content: 'Trầu bà vàng hay trầu bà xanh vậy bạn?' },
+      { postId: createdPosts[2].id, userId: users[0].id, content: 'Monstera nhà mình cần phun sương mỗi ngày là cây rất thích!' },
+      { postId: createdPosts[3].id, userId: users[2].id, content: 'Cho mình xin một cây nhé bạn 😍' },
+      { postId: createdPosts[4].id, userId: users[0].id, content: 'Công thức hay đó bạn, mình sẽ thử áp dụng!' },
+    ];
+
+    await Comment.bulkCreate(commentsData);
+    console.log(`Đã tạo thành công ${commentsData.length} bình luận mẫu.`);
+
+    // Seed lượt thích mẫu
+    const likesData = [
+      { postId: createdPosts[0].id, userId: users[1].id },
+      { postId: createdPosts[0].id, userId: users[2].id },
+      { postId: createdPosts[1].id, userId: users[0].id },
+      { postId: createdPosts[1].id, userId: users[2].id },
+      { postId: createdPosts[2].id, userId: users[0].id },
+      { postId: createdPosts[2].id, userId: users[1].id },
+      { postId: createdPosts[3].id, userId: users[1].id },
+      { postId: createdPosts[4].id, userId: users[0].id },
+      { postId: createdPosts[4].id, userId: users[2].id },
+    ];
+
+    await PostLike.bulkCreate(likesData);
+    console.log(`Đã tạo thành công ${likesData.length} lượt thích mẫu.`);
 
     console.log("=== ĐÃ HOÀN THÀNH SEED DỮ LIỆU THÀNH CÔNG! ===");
     process.exit(0);
