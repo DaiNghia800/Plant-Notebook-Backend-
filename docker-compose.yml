@@ -14,12 +14,13 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./config/serviceAccountKey.json:/app/config/serviceAccountKey.json:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       - NODE_ENV=development
-      - DB_HOST=postgres
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
 
   ai_worker:
@@ -33,33 +34,11 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./config/serviceAccountKey.json:/app/config/serviceAccountKey.json:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       - NODE_ENV=development
-      - DB_HOST=postgres
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-
-  postgres:
-    image: postgres:15-alpine
-    container_name: plant_notebook_db
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin123}
-      POSTGRES_DB: ${DB_NAME:-plant_notebook}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-plant_notebook}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres_data:
