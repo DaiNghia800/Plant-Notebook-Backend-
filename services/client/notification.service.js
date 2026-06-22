@@ -4,18 +4,18 @@ class NotificationService {
   static async sendReminderNotification(token, title, body, data = {}) {
     const message = {
       token: token,
-      notification: {
+      data: {
+        ...data,
         title: title,
         body: body,
       },
-      data: data,
       android: {
         priority: 'high',
       },
       apns: {
         payload: {
           aps: {
-            sound: 'default',
+            contentAvailable: true,
           },
         },
       },

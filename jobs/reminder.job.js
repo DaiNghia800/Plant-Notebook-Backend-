@@ -64,7 +64,11 @@ const initReminderJob = () => {
               user.fcmToken,
               title,
               body,
-              { reminderId: reminder.id.toString(), gardenPlantId: reminder.gardenPlantId.toString() }
+              { 
+                reminderId: reminder.id.toString(), 
+                gardenPlantId: reminder.gardenPlantId.toString(),
+                type: reminder.type 
+              }
             );
 
             reminder.lastNotificationSentAt = new Date();

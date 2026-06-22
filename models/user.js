@@ -11,7 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.belongsTo(models.Role, { foreignKey: 'roleId', as: 'role' })
+      User.belongsTo(models.Role, { foreignKey: 'roleId', as: 'role' });
+      User.hasMany(models.Post, { foreignKey: 'userId', as: 'posts', onDelete: 'CASCADE' });
+      User.hasMany(models.Comment, { foreignKey: 'userId', as: 'comments', onDelete: 'CASCADE' });
+      User.hasMany(models.PostLike, { foreignKey: 'userId', as: 'postLikes', onDelete: 'CASCADE' });
     }
   }
   User.init({
