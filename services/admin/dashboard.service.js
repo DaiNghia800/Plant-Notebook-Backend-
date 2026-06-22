@@ -107,9 +107,31 @@ module.exports = {
       group: ['status'],
       raw: true,
     });
-    return data.map(row => ({
-      status: row.status || 'Không rõ',
-      count: parseInt(row.count, 10)
+
+    const statusMap = {
+      'healthy': 'Khỏe mạnh',
+      'sick': 'Đang bệnh',
+      'thirsty': 'Cần nước',
+      'Khỏe mạnh': 'Khỏe mạnh',
+      'Đang bệnh': 'Đang bệnh',
+      'Đang khát': 'Cần nước'
+    };
+
+    const groupedData = {};
+
+    data.forEach(row => {
+      const rawStatus = row.status || 'Không rõ';
+      const mappedStatus = statusMap[rawStatus] || rawStatus;
+      
+      if (!groupedData[mappedStatus]) {
+        groupedData[mappedStatus] = 0;
+      }
+      groupedData[mappedStatus] += parseInt(row.count, 10);
+    });
+
+    return Object.keys(groupedData).map(status => ({
+      status,
+      count: groupedData[status]
     }));
   },
 
