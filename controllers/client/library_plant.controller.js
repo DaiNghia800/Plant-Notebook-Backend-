@@ -177,6 +177,7 @@ exports.getScanResult = async (req, res) => {
       data: {
         taskId: scanTask.id,
         status: scanTask.status,
+        imageUrl: scanTask.imageUrl,
         aiResult: scanTask.aiResult
       }
     });
