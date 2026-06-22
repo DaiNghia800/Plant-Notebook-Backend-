@@ -129,8 +129,12 @@ exports.scanPlantImage = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Image file is required and must be uploaded successfully' });
     }
 
-    // Try to get userId if available (assuming authMiddleware might be used or passed via query/header)
-    const userId = req.user ? req.user.id : (req.headers['x-user-id'] || req.query.user_id || 'anonymous');
+    // Lấy userId từ JWT token (req.user được set bởi authMiddleware)
+    const userId = req.user ? req.user.id : null;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Bạn cần đăng nhập để sử dụng tính năng quét cây' });
+    }
+    console.log(`[scanPlantImage] userId: ${userId}`);
 
     // 1. Tạo bản ghi AiScanTask trạng thái PENDING
     const scanTask = await db.AiScanTask.create({
