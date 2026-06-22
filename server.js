@@ -10,7 +10,7 @@ const { initReminderJob } = require('./jobs/reminder.job');
 
 const app = express();
 const port = process.env.PORT || 5000;
-
+app.set('trust proxy', 1);
 // CORS middleware
 const allowedOrigins = [
   process.env.CLIENT_URL,
