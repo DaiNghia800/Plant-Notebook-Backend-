@@ -11,7 +11,12 @@ const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
 const redis = new Redis(REDIS_URL, {
   maxRetriesPerRequest: 3,
+  enableOfflineQueue: false,
   retryStrategy(times) {
+    if (times > 3) {
+      console.warn('[Redis] ❌ Connection failed after 3 attempts. Caching is disabled (fail-open).');
+      return null;
+    }
     const delay = Math.min(times * 200, 2000);
     console.log(`[Redis] Retrying connection... attempt ${times}, delay ${delay}ms`);
     return delay;
