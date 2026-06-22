@@ -11,16 +11,16 @@ exports.getAllPlants = async (req, res) => {
     const cached = await getCache(cacheKey);
     if (cached) {
       console.log('Cache Hit!');
-      return res.status(200).json({ data: cached });
+      return res.status(200).json({ success: true, data: cached });
     }
 
     console.log('Cache Miss!');
     const plants = await libraryPlantService.getAllPlants({ category, isTrending, isRare, approvalStatus });
     await setCache(cacheKey, plants, 300); // TTL 5 phút
-    return res.status(200).json({ data: plants });
+    return res.status(200).json({ success: true, data: plants });
   } catch (error) {
     console.error('getAllPlants error:', error);
-    return res.status(500).json({ message: 'Internal server error', error: error.message });
+    return res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 };
 
@@ -33,19 +33,19 @@ exports.getPlantById = async (req, res) => {
     const cached = await getCache(cacheKey);
     if (cached) {
       console.log('Cache Hit!');
-      return res.status(200).json({ data: cached });
+      return res.status(200).json({ success: true, data: cached });
     }
 
     console.log('Cache Miss!');
     const plant = await libraryPlantService.getPlantById(plantId);
     if (!plant) {
-      return res.status(404).json({ message: 'Plant not found in library' });
+      return res.status(404).json({ success: false, message: 'Plant not found in library' });
     }
     await setCache(cacheKey, plant, 600); // TTL 10 phút
-    return res.status(200).json({ data: plant });
+    return res.status(200).json({ success: true, data: plant });
   } catch (error) {
     console.error('getPlantById error:', error);
-    return res.status(500).json({ message: 'Internal server error', error: error.message });
+    return res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 };
 
@@ -60,7 +60,7 @@ exports.contributePlant = async (req, res) => {
         name: req.body.name,
         category: req.body.category
       });
-      return res.status(400).json({ message: 'id, name, and category are required' });
+      return res.status(400).json({ success: false, message: 'id, name, and category are required' });
     }
 
     // Parse JSON arrays if they are sent as strings via form-data
@@ -84,6 +84,7 @@ exports.contributePlant = async (req, res) => {
         } catch (e) {
           console.warn(`Failed to parse ${field}:`, e.message);
           return res.status(400).json({ 
+            success: false,
             message: `Dữ liệu của trường ${field} không đúng định dạng JSON hợp lệ. Chi tiết lỗi: ${e.message}. Bắt buộc phải là mảng hoặc đối tượng JSON hợp lệ.` 
           });
         }
@@ -94,12 +95,13 @@ exports.contributePlant = async (req, res) => {
     const contributedPlant = await libraryPlantService.contributePlant(req.body, userId);
     await deleteCacheByPattern('plants:*'); // Invalidate plant caches
     return res.status(201).json({
+      success: true,
       message: 'Gửi đề xuất cây mới thành công, đang chờ Admin kiểm duyệt.',
       data: contributedPlant
     });
   } catch (error) {
     console.error('contributePlant error:', error);
-    return res.status(500).json({ message: 'Internal server error', error: error.message });
+    return res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 };
 
@@ -107,13 +109,13 @@ exports.checkExistence = async (req, res) => {
   try {
     const { name, scientificName } = req.query;
     if (!name && !scientificName) {
-      return res.status(400).json({ message: 'At least name or scientificName is required' });
+      return res.status(400).json({ success: false, message: 'At least name or scientificName is required' });
     }
     const result = await libraryPlantService.checkExistence({ name, scientificName });
-    return res.status(200).json({ data: result });
+    return res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.error('checkExistence error:', error);
-    return res.status(500).json({ message: 'Internal server error', error: error.message });
+    return res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 };
 
@@ -124,7 +126,7 @@ exports.scanPlantImage = async (req, res) => {
   try {
     const imageUrl = req.body.imageUrl || req.body.image_url;
     if (!imageUrl) {
-      return res.status(400).json({ message: 'Image file is required and must be uploaded successfully' });
+      return res.status(400).json({ success: false, message: 'Image file is required and must be uploaded successfully' });
     }
 
     // Try to get userId if available (assuming authMiddleware might be used or passed via query/header)
@@ -153,7 +155,7 @@ exports.scanPlantImage = async (req, res) => {
 
   } catch (error) {
     console.error('scanPlantImage error:', error);
-    return res.status(500).json({ message: 'Lỗi khi đẩy yêu cầu phân tích hình ảnh vào hàng đợi', error: error.message });
+    return res.status(500).json({ success: false, message: 'Lỗi khi đẩy yêu cầu phân tích hình ảnh vào hàng đợi', error: error.message });
   }
 };
 

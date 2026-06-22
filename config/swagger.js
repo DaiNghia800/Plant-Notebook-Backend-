@@ -19,9 +19,13 @@ const options = {
         url: "https://plant-notebook.id.vn",
         description: "Production Server (Online)",
       },
+      {
+        url: "https://plant-notebook.id.vn/admin",
+        description: "Admin Server (Online)",
+      }
     ],
   },
-  apis: ["./routes/*.js", "./routes/**/*.js"], 
+  apis: ["./routes/*.js", "./routes/**/*.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
