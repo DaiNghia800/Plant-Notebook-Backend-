@@ -4,14 +4,11 @@ on:
   push:
     branches:
       - develop
-    tags:
-      - 'v*'
 
 jobs:
   build-and-push:
     name: Build and Push Docker Image to ECR
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -39,104 +36,19 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
   deploy:
-    name: Deploy to EC2 (JIT Access)
+    name: Trigger ASG Instance Refresh
     needs: build-and-push
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Configure AWS Credentials for Deployment
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Get GitHub Actions Runner IP
-        id: ip
-        run: echo "ipv4=$(curl -s https://checkip.amazonaws.com)" >> $GITHUB_OUTPUT
-
-      - name: Whitelist Runner IP in Security Group (Open Port 22)
+      - name: Start Instance Refresh
         run: |
-          aws ec2 authorize-security-group-ingress \
-            --group-id ${{ secrets.AWS_SG_ID }} \
-            --protocol tcp \
-            --port 22 \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32
-
-      - name: Setup SSH and Deploy
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            mkdir -p ~/plant-notebook-backend/config
-            cd ~/plant-notebook-backend
-
-            # === 1. Generate .env from GitHub Secrets ===
-            cat << 'EOF_ENV' > .env
-            ${{ secrets.ENV_FILE }}
-            EOF_ENV
-
-            # Append DB & API secrets (sourced from GitHub Secrets)
-            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-            echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
-            echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
-
-            # === 2. Write Firebase service account key ===
-            cat << 'EOF_JSON' > config/serviceAccountKey.json
-            ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-            EOF_JSON
-
-            # === 3. Write clean docker-compose.yml (no local postgres) ===
-            cat << 'EOF' > docker-compose.yml
-            version: '3.8'
-            services:
-              backend:
-                image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
-                container_name: plant_notebook_backend
-                restart: unless-stopped
-                ports:
-                  - "5000:5000"
-                env_file:
-                  - .env
-                volumes:
-                  - ./logs:/app/logs
-                  - ./config/serviceAccountKey.json:/app/config/serviceAccountKey.json:ro
-                environment:
-                  - NODE_ENV=production
-
-              ai_worker:
-                image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
-                container_name: plant_notebook_ai_worker
-                restart: unless-stopped
-                command: node workers/aiWorker.js
-                env_file:
-                  - .env
-                volumes:
-                  - ./logs:/app/logs
-                  - ./config/serviceAccountKey.json:/app/config/serviceAccountKey.json:ro
-                environment:
-                  - NODE_ENV=production
-            EOF
-
-            # === 4. Pull new image, restart services ===
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-
-            docker compose pull backend ai_worker
-            docker compose down
-            docker compose up -d
-            docker image prune -af
-
-      - name: Revoke Runner IP from Security Group (Close Port 22)
-        if: always()
-        run: |
-          aws ec2 revoke-security-group-ingress \
-            --group-id ${{ secrets.AWS_SG_ID }} \
-            --protocol tcp \
-            --port 22 \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name plant-notebook-asg \
+            --preferences '{"MinHealthyPercentage": 50}'
