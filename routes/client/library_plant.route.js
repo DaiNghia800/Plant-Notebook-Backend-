@@ -161,12 +161,12 @@ router.get('/check-existence', controller.checkExistence);
  *                 format: binary
  *                 description: File ảnh cây trồng cần scan
  *     responses:
- *       200:
- *         description: Trả về kết quả phân tích JSON thành công
- *       429:
- *         description: Tất cả API key đang bị rate limit
+ *       202:
+ *         description: Đã nhận yêu cầu phân tích hình ảnh và đang xử lý trong hàng đợi
+ *       400:
+ *         description: Thiếu tệp ảnh hoặc tải ảnh lên thất bại
  *       500:
- *         description: Lỗi máy chủ nội bộ
+ *         description: Lỗi máy chủ nội bộ hoặc lỗi đẩy hàng đợi
  */
 router.post('/scan', uploadS3.singleImage, uploadS3.uploadToS3, controller.scanPlantImage);
 

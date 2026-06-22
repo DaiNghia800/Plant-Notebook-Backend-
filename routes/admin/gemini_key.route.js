@@ -50,7 +50,9 @@ router.get('/', controller.getAllKeys);
  *       201:
  *         description: Tạo thành công
  *       400:
- *         description: Key đã tồn tại hoặc thiếu tham số
+ *         description: Thiếu tham số (apiKey)
+ *       409:
+ *         description: API Key này đã tồn tại trong hệ thống
  */
 router.post('/', controller.createKey);
 
