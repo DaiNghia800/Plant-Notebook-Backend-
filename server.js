@@ -19,6 +19,7 @@ const allowedOrigins = [
   "http://localhost:5175",
   "http://localhost:3000",
   'https://plant-notebook.id.vn',
+  'https://plantnotebookadmin.vercel.app'
 ].filter(Boolean);
 
 app.use(cors({
