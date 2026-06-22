@@ -13,6 +13,11 @@ const options = {
     servers: [
       {
         url: `http://localhost:${port}`,
+        description: "Local Server",
+      },
+      {
+        url: "https://plant-notebook.id.vn",
+        description: "Production Server (Online)",
       },
     ],
   },
