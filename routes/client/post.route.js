@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../../controllers/client/post.controller');
-const { singleImage, uploadToCloudinary } = require('../../middlewares/uploadCloudinary');
+const { singleImage, uploadToS3 } = require('../../middlewares/uploadS3');
 
 /**
  * @swagger
@@ -87,7 +87,7 @@ router.get('/:id', controller.getPostById);
  *       201:
  *         description: Tạo thành công
  */
-router.post('/', singleImage, uploadToCloudinary, controller.createPost);
+router.post('/', singleImage, uploadToS3, controller.createPost);
 
 /**
  * @swagger
@@ -150,7 +150,7 @@ router.delete('/:id', controller.deletePost);
  *       200:
  *         description: Sửa thành công
  */
-router.put('/:id', singleImage, uploadToCloudinary, controller.updatePost);
+router.put('/:id', singleImage, uploadToS3, controller.updatePost);
 
 /**
  * @swagger
