@@ -51,7 +51,7 @@ const processMessage = async (message) => {
         const payload = {
           notification: {
             title: 'Kết quả quét AI đã sẵn sàng!',
-            body: 'Hệ thống đã phân tích xong bệnh cây của bạn. Nhấn vào để xem chi tiết.'
+            body: 'Hệ thống đã phân tích thành công cây của bạn. Nhấn vào để xem chi tiết.'
           },
           data: {
             taskId: task.id.toString()
